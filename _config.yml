@@ -1,2 +1,4 @@
-	name: Maharnab B, Horrible Cop
-	markdown: kramdown
+name: Maharnab B, Horrible Cop
+markdown: kramdown
+
+permalink: /blog/:year/:month/:day/:title
