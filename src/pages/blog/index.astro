@@ -1,0 +1,96 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Blog | ${SITE_TITLE}`}
+			description="Research notes, engineering logs, and writing on detector systems and scientific computing."
+		/>
+		<style>
+			.blog-list {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+				display: grid;
+				gap: 1.2rem;
+			}
+
+			.blog-list li {
+				border: 1px solid var(--line-soft);
+				border-radius: 12px;
+				background: color-mix(in oklab, var(--surface) 86%, white);
+			}
+
+			.blog-list a {
+				display: block;
+				padding: 0.95rem 1rem;
+				text-decoration: none;
+				color: inherit;
+			}
+
+			.blog-list a:hover h3 {
+				text-decoration: underline;
+				text-decoration-thickness: 2px;
+			}
+
+			.blog-list h3 {
+				margin: 0.18rem 0 0.35rem;
+				color: var(--text-strong);
+			}
+
+			.blog-list .post-date {
+				font-size: 0.84rem;
+				letter-spacing: 0.01em;
+				color: var(--text-muted);
+			}
+
+			.blog-list .meta {
+				margin: 0;
+				max-width: 68ch;
+			}
+
+			@media (max-width: 720px) {
+				.blog-list a {
+					padding: 0.85rem 0.9rem;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="panel">
+				<h1>Blog</h1>
+				<p class="lede">Research notes, engineering logs, and technical writing from my work in detector development and scientific computing.</p>
+				<ul class="blog-list">
+					{
+						posts.map((post) => (
+							<li>
+								<a href={`/blog/${post.id}/`}>
+									<div class="post-date">
+										<FormattedDate date={post.data.pubDate} />
+									</div>
+									<h3>{post.data.title}</h3>
+									<p class="meta">{post.data.description}</p>
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

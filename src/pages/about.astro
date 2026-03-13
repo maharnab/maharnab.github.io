@@ -1,0 +1,53 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`About | ${SITE_TITLE}`}
+			description="Biography, research directions, and contact profiles for Maharnab Bhattacharjee."
+		/>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="panel">
+				<h1>About</h1>
+				<p class="lede">
+					I am an experimental physicist focused on detector development for high-energy physics, with work
+					centered on electromagnetic calorimetry, readout electronics, and calibration workflows.
+				</p>
+				<p>
+					My recent research has been tied to the NICA-MPD ECAL program at JINR Dubna and to broader efforts
+					linked with DUNE-oriented detector and electronics studies. I enjoy the full cycle of hardware
+					integration, data acquisition, and software analysis for performance validation.
+				</p>
+			</section>
+
+			<section class="panel">
+				<h2>Research Themes</h2>
+				<ul class="flat-list">
+					<li><strong>Detector systems:</strong> calibration and deployment workflows for calorimeter modules.</li>
+					<li><strong>Electronics and DAQ:</strong> SiPM readout development and testbench-driven instrumentation.</li>
+					<li><strong>Analysis and simulation:</strong> reconstruction studies and software support for detector performance.</li>
+				</ul>
+			</section>
+
+			<section class="panel">
+				<h2>Profiles</h2>
+				<div class="pills">
+					<a href="https://github.com/maharnab" target="_blank" rel="noreferrer">GitHub</a>
+					<a href="https://www.linkedin.com/in/maharnabb" target="_blank" rel="noreferrer">LinkedIn</a>
+					<a href="https://orcid.org/0000-0002-8700-4930" target="_blank" rel="noreferrer">ORCID</a>
+					<a href="mailto:maharnabb@gmail.com">maharnabb@gmail.com</a>
+				</div>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

@@ -1,0 +1,78 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { getCollection } from 'astro:content';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const posts = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 3);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="panel hero">
+				<h1>Building detector systems and scientific tools for high-energy physics.</h1>
+				<p class="lede">
+					I am Maharnab Bhattacharjee, an experimental physicist working on electromagnetic calorimeter
+					development, calibration workflows, and readout electronics for large collaborations including
+					NICA-MPD and DUNE-linked projects.
+				</p>
+				<div class="pills">
+					<a href="/about">About</a>
+					<a href="/blog">Research Notes</a>
+					<a href="mailto:maharnabb@gmail.com">Email</a>
+				</div>
+			</section>
+
+			<section class="panel">
+				<h2>Focus Areas</h2>
+				<div class="cards">
+					<article class="card">
+						<h3>Detector R&amp;D</h3>
+						<p>Assembly, testing, and calibration of ECAL modules and baskets using cosmic muons and beam data.</p>
+					</article>
+					<article class="card">
+						<h3>Readout and DAQ</h3>
+						<p>SiPM-centered frontend development and DAQ workflows for robust detector operation.</p>
+					</article>
+					<article class="card">
+						<h3>Scientific Computing</h3>
+						<p>C/C++, Python, and analysis pipelines for detector reconstruction and performance validation.</p>
+					</article>
+				</div>
+			</section>
+
+			<section class="panel">
+				<h2>Research Snapshot</h2>
+				<ul class="flat-list">
+					<li><strong>Current role:</strong> Junior Research Scientist, NICA project, LHEP JINR, Dubna.</li>
+					<li><strong>Academic status:</strong> PhD in Physical Science, Gauhati University.</li>
+					<li><strong>Recent output:</strong> Publications on MPD/NICA ECAL calibration with cosmic muons.</li>
+				</ul>
+			</section>
+
+			<section class="panel">
+				<h2>Recent Writing</h2>
+				<ul class="post-list">
+					{
+						posts.map((post) => (
+							<li>
+								<div class="post-date">{post.data.pubDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+								<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
