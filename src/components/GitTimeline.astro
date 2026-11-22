@@ -96,7 +96,7 @@ const W = LANE_W * (nLanes + 1);
 // A branch is a curve followed by a short straight run into the dot. Level-2 branches (small
 // dots) use a shorter one. Rows that start a branch are tall enough to hold it, so a branch
 // always leaves its parent line inside its own row, never at the parent's circle below.
-const BR = { 1: { s: 15, c: 22 }, 2: { s: 9, c: 11 } } as const;
+const BR = { 1: { s: 15, c: 22 }, 2: { s: 15, c: 11 } } as const;
 const H = (lv: 1 | 2) => BR[lv].s + BR[lv].c;
 const C = H(1);
 const curve = (x0: number, x1: number, lv: 1 | 2) => {
