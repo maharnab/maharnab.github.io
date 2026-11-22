@@ -1,29 +1,19 @@
 ---
 import Page from '../layouts/Page.astro';
 import { LINKS, SITE_TITLE } from '../consts';
-import {
-	DUNE_PAPER_COUNT,
-	TOTAL_PAPER_COUNT,
-	duneSelected,
-	ecalPapers,
-	mpdCollaborationPapers,
-	talks,
-	thesis,
-	type Pub,
-} from '../data/publications';
+import { ecalPapers, thesis, type Pub } from '../data/publications';
 
 const bold = (a: string) => a.replace(/(M\. Bhattacharjee)/, '<strong>$1</strong>');
 ---
 
 <Page
 	title={`Publications | ${SITE_TITLE}`}
-	description="Papers, thesis and talks on calorimeter calibration, SiPM readout and neutrino physics."
+	description="Papers and PhD thesis on calorimeter calibration and SiPM readout."
 >
 	<section class="panel">
 		<h1>Publications</h1>
 		<p class="lede">
-			{TOTAL_PAPER_COUNT} records on INSPIRE-HEP: {ecalPapers.length} detector papers on the NICA-MPD calorimeter
-			(2 as first author) and {DUNE_PAPER_COUNT} as a member of the DUNE collaboration.
+			{ecalPapers.length} detector papers on the NICA-MPD electromagnetic calorimeter, 2 of them as first author.
 		</p>
 		<div class="pills">
 			<a href={LINKS.inspire} target="_blank" rel="noreferrer">INSPIRE-HEP profile</a>
@@ -59,36 +49,6 @@ const bold = (a: string) => a.replace(/(M\. Bhattacharjee)/, '<strong>$1</strong
 		{thesis.href ? <a href={thesis.href}>Full text</a> : <div class="todo">Add the Shodhganga / university repository link (not found online yet).</div>}
 	</section>
 
-	<section class="panel">
-		<h2>Selected collaboration papers</h2>
-		<p class="muted">
-			Large-collaboration papers list all members alphabetically. Selected for relevance to machine learning, GPU
-			computing and detector design. Full list on INSPIRE.
-		</p>
-		<ol class="pubs">
-			{[...duneSelected, ...mpdCollaborationPapers].map((p: Pub) => (
-				<li>
-					<span class="title">{p.title}</span>
-					{p.note && <span class="first">{p.note}</span>}
-					<br />
-					<span class="authors">{p.authors}</span> · <span class="venue">{p.venue} ({p.year})</span>
-					{p.doi && <a href={`https://doi.org/${p.doi}`} target="_blank" rel="noreferrer">DOI</a>}
-					{p.arxiv && <a href={`https://arxiv.org/abs/${p.arxiv}`} target="_blank" rel="noreferrer">arXiv</a>}
-				</li>
-			))}
-		</ol>
-	</section>
-
-	<section class="panel">
-		<h2>Talks</h2>
-		<ul class="flat-list">
-			{talks.map((t) => (
-				<li>
-					<span class="muted">{t.date}</span> · <strong>{t.title}</strong> — {t.event}
-				</li>
-			))}
-		</ul>
-	</section>
 </Page>
 
 <style>

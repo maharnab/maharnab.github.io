@@ -16,7 +16,7 @@ links:
 ## The problem
 
 The DUNE near detector needed an electromagnetic calorimeter to measure photons and electrons, including the
-two photons from π⁰ decays. I studied a design based on the T2K ND280 downstream ECAL: plastic-scintillator bars
+two photons from π⁰ decays. I studied a design with plastic-scintillator bars
 interleaved with lead or tungsten absorber. The question was what energy resolution and π⁰ reconstruction
 performance such a design could deliver.
 
@@ -52,7 +52,7 @@ performance such a design could deliver.
 
 ## Outcome
 
-The study became chapter 2 of my PhD thesis. DUNE later chose to reuse the KLOE calorimeter for its near
-detector, so this design was not built. The simulation and reconstruction code is public.
+The study became chapter 2 of my PhD thesis. The design was part of a proposal from the Indian groups in
+DUNE for the near detector. It was not chosen for the final near-detector design, so it was not built. The simulation and reconstruction code is public.
 
 <div class="todo">Check the stated resolution (S = 6.72 ± 0.58 %, N ≈ 1.1, C ≈ 1.1 %) and the period. Before linking the code, check that the thesis results don't come from the commit where the primary energy is randomised (see ~/Projects/github/TODO.md #3).</div>

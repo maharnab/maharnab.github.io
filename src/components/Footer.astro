@@ -1,12 +1,12 @@
 ---
 import { LINKS, SITE_TITLE } from '../consts';
+import Email from './Email.astro';
 const today = new Date();
 ---
 
 <footer>
 	<p class="links">
-		<a href={`mailto:${LINKS.email}`}>{LINKS.email}</a>
-		<a href={`mailto:${LINKS.emailWork}`}>{LINKS.emailWork}</a>
+		<Email />
 	</p>
 	<p class="links">
 		<a href={LINKS.github} target="_blank" rel="noreferrer">GitHub</a>

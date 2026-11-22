@@ -7,9 +7,10 @@ export const SITE_DESCRIPTION =
 
 export const AFFILIATION = 'Research Scientist, LHEP, JINR';
 
+// Public email, split so it isn't in the HTML as one string (see components/Email.astro).
+export const EMAIL = ['maharnabb', 'gmail.com'] as const;
+
 export const LINKS = {
-	email: 'maharnabb@gmail.com',
-	emailWork: 'maharnabb@jinr.ru',
 	github: 'https://github.com/maharnab',
 	linkedin: 'https://www.linkedin.com/in/maharnabb',
 	orcid: 'https://orcid.org/0000-0002-8700-4930',

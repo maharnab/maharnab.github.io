@@ -5,6 +5,7 @@ import ProjectCard from '../components/ProjectCard.astro';
 import { AFFILIATION, LINKS, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import GitTimeline from '../components/GitTimeline.astro';
 import { newestFirst } from '../utils/projects';
+import Email from '../components/Email.astro';
 
 const featured = (await getCollection('projects'))
 	.filter((p) => p.data.featured)
@@ -71,8 +72,7 @@ const areas = [
 			</p>
 			<div class="pills">
 				<a class="btn primary" href="/projects">See projects</a>
-				<a class="btn" href="/cv">CV</a>
-				<a class="btn" href={`mailto:${LINKS.email}`}>Email</a>
+				<Email class="btn" label="Email" />
 				<a class="btn" href={LINKS.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
 				<a class="btn" href={LINKS.github} target="_blank" rel="noreferrer">GitHub</a>
 			</div>

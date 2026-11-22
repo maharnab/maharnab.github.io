@@ -112,7 +112,7 @@ export const timeline: Entry[] = [
 		title: 'Junior Research Fellow, DUNE-India',
 		org: 'IIT Guwahati',
 		short: 'Calorimeter and readout studies for the DUNE near detector.',
-		text: 'ECAL and readout development for the DUNE near detector. DUNE collaboration author since 2018.',
+		text: 'ECAL and readout development for the DUNE near detector.',
 		project: 'dune-nd-ecal-simulation',
 		kind: 'work',
 	},

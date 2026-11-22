@@ -1,0 +1,20 @@
+---
+// Gmail link, assembled in the browser so the address never appears in the HTML.
+// Without JavaScript the link just reads "Email".
+import { EMAIL } from '../consts';
+type Props = { label?: string; class?: string };
+const { label, class: cls } = Astro.props;
+const [user, domain] = EMAIL;
+---
+
+<a class:list={['email-link', cls]} data-u={user.split('').reverse().join('')} data-d={domain} data-label={label}
+	>{label ?? 'Email'}</a
+>
+
+<script>
+	for (const a of document.querySelectorAll<HTMLAnchorElement>('a.email-link')) {
+		const addr = `${a.dataset.u!.split('').reverse().join('')}@${a.dataset.d}`;
+		a.href = `mailto:${addr}`;
+		if (!a.dataset.label) a.textContent = addr;
+	}
+</script>

@@ -1,6 +1,7 @@
 ---
 import Page from '../layouts/Page.astro';
 import { LINKS, SITE_TITLE } from '../consts';
+import Email from '../components/Email.astro';
 import { skills, timelineNewestFirst as timeline } from '../data/timeline';
 ---
 
@@ -13,22 +14,27 @@ import { skills, timelineNewestFirst as timeline } from '../data/timeline';
 		<div>
 			<h1>About</h1>
 			<p class="lede">
-				I'm an experimental physicist who has spent twelve years between hardware and data: test-station
-				software for the Thirty Meter Telescope, SiPM front-end electronics, Geant4 detector simulation for DUNE,
-				and since 2019 the calibration of the NICA-MPD electromagnetic calorimeter at JINR.
+				I am an experimental physicist at JINR. I work on the electromagnetic calorimeter of the MPD experiment
+				at NICA.
 			</p>
 			<p>
-				The common thread is turning noisy, high-volume sensor data into numbers people can trust. On the MPD
-				calorimeter that meant designing and running the pipelines that characterised every one of its 2,400
-				SiPM readout boards and 50 sectors: decoding raw binary DAQ streams, fitting tens of thousands of
-				distributions, finding the broken channels and the systematic effects nobody had noticed, and handing
-				the collaboration certified constants.
+				I started on this calorimeter in 2019. First, I calibrated its 2,400 SiPM readout boards with LEDs. Then
+				I tested its modules and half-sectors with cosmic muons. Now I analyse the cosmic and beam data that the
+				calorimeter records inside MPD.
 			</p>
 			<p>
-				I'm now looking for roles in <strong>data science, machine learning, quantitative research, HPC/GPU
-				computing</strong> or <strong>research science</strong>, where that combination of rigorous statistics,
-				performance-minded engineering and ownership of messy real-world data is useful.
+				Most of my work is data analysis. I write the software in C++ and Python. I decode raw detector data, fit
+				large sets of distributions and find the channels that do not work correctly.
 			</p>
+			<p>
+				Before JINR, I tested mirror actuators for the Thirty Meter Telescope. During my MS and PhD, I designed
+				SiPM readout electronics and simulated a calorimeter design with Geant4.
+			</p>
+			<p>
+				I am looking for work in <strong>data science, machine learning, quantitative research, HPC/GPU
+				computing</strong> or <strong>research science</strong>.
+			</p>
+			<p>My CV is available on request. Please contact me by email or on LinkedIn.</p>
 		</div>
 	</section>
 
@@ -73,8 +79,7 @@ import { skills, timelineNewestFirst as timeline } from '../data/timeline';
 	<section class="panel">
 		<h2>Contact</h2>
 		<div class="pills">
-			<a href={`mailto:${LINKS.email}`}>{LINKS.email}</a>
-			<a href={`mailto:${LINKS.emailWork}`}>{LINKS.emailWork}</a>
+			<Email />
 			<a href={LINKS.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
 			<a href={LINKS.github} target="_blank" rel="noreferrer">GitHub</a>
 			<a href={LINKS.orcid} target="_blank" rel="noreferrer">ORCID</a>
