@@ -14,9 +14,7 @@ export type Entry = {
 	project?: string; // slug in src/content/projects
 	kind: Kind;
 	earlier?: string; // earlier title in the same position, shown under the title
-	// Home-page timeline: entries with the same lane share a line that runs parallel to the main
-	// (studies) line. Without a lane, an entry sits on the main line or, if it falls inside a
-	// degree, branches off it as a short side item.
+	// Home-page timeline: entries with the same lane are drawn as one continuous branch.
 	lane?: 'jinr' | 'advisor';
 };
 
@@ -41,11 +39,11 @@ export const timeline: Entry[] = [
 		lane: 'jinr',
 	},
 	{
-		start: '2024-10',
-		period: 'Oct 2024',
-		title: 'PhD thesis submitted',
+		start: '2025-10',
+		period: 'Oct 2025',
+		title: 'PhD defended',
 		org: 'Gauhati University',
-		short: 'Degree awarded Oct 2025.',
+		short: 'Thesis submitted Oct 2024.',
 		text: '',
 		kind: 'milestone',
 	},

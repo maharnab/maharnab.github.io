@@ -1,93 +1,115 @@
 ---
-// Home-page timeline, newest at the top. Three parallel lines, each running from the row where it
-// starts up to the row where it ends (or off the top if ongoing):
-//   main  – studies and early positions, ending with the PhD thesis submission
-//   advisor, jinr – lanes declared in the data with `lane`
-// Short activities inside a degree branch off the main line as a small side dot.
+// Home-page timeline, newest at the top. One time line runs from the first entry to the present;
+// degrees and other sequential stages sit on it. Every activity that ran in parallel branches off
+// at its start and runs alongside for as long as it lasted (several branches when several overlap).
+// Branches never merge back. Entries sharing a `lane` are drawn as one continuous branch.
 import { timeline, type Entry } from '../data/timeline';
 
-const OPEN = '9999-12';
-const endOf = (e: Entry) => e.end ?? OPEN;
 const months = (ym: string) => Number(ym.slice(0, 4)) * 12 + Number(ym.slice(5, 7));
+const NOW = '9999-12';
+const endOf = (e: Entry) => e.end ?? NOW;
 
+// On the time line: degrees, milestones, and anything that did not run inside a degree.
 const degrees = timeline.filter((e) => e.kind === 'education');
-const isStub = (e: Entry) =>
-	!e.lane &&
-	e.kind !== 'education' &&
-	e.kind !== 'milestone' &&
+const insideDegree = (e: Entry) =>
 	!!e.end &&
 	degrees.some(
 		(d) => d.start <= e.start && e.start <= endOf(d) && months(e.end!) <= months(endOf(d)) + 2,
 	);
-
-type LaneKey = 'main' | 'advisor' | 'jinr';
-const LANES: LaneKey[] = ['main', 'advisor', 'jinr'];
-const laneOf = (e: Entry): LaneKey | 'stub' => e.lane ?? (isStub(e) ? 'stub' : 'main');
-const rank = { jinr: 3, advisor: 2, stub: 1, main: 0 };
+const onSpine = (e: Entry) =>
+	!e.lane && (e.kind === 'education' || e.kind === 'milestone' || !insideDegree(e));
 
 const rows = [...timeline].sort(
-	(a, b) => b.start.localeCompare(a.start) || rank[laneOf(b)] - rank[laneOf(a)],
+	(a, b) => b.start.localeCompare(a.start) || Number(onSpine(a)) - Number(onSpine(b)),
 );
 
-// Row span of each line. Lanes other than main with an open-ended entry run off the top (-1).
-const span = Object.fromEntries(
-	LANES.map((k) => {
-		const idx = rows.flatMap((e, i) => (laneOf(e) === k ? [i] : []));
-		const open = k !== 'main' && rows.some((e) => laneOf(e) === k && !e.end);
-		return [k, { top: open ? -1 : Math.min(...idx), bottom: Math.max(...idx) }];
-	}),
-) as Record<LaneKey, { top: number; bottom: number }>;
+// Branches: one per lane, or one per standalone parallel entry.
+type Branch = { key: string; start: string; end: string; lane: number; startRow: number; topRow: number };
+const keyOf = (e: Entry) => e.lane ?? `${e.start}|${e.title}`;
+const branches = new Map<string, Branch>();
+rows.forEach((e, i) => {
+	if (onSpine(e)) return;
+	const k = keyOf(e);
+	const b = branches.get(k);
+	if (!b) branches.set(k, { key: k, start: e.start, end: endOf(e), lane: 0, startRow: i, topRow: i });
+	else {
+		b.start = e.start < b.start ? e.start : b.start;
+		b.end = endOf(e) > b.end ? endOf(e) : b.end;
+		b.startRow = Math.max(b.startRow, i);
+	}
+});
+// A branch runs up through every newer row that started before it ended.
+for (const b of branches.values()) {
+	let k = b.startRow;
+	while (k > 0 && rows[k - 1].start <= b.end) k--;
+	b.topRow = k;
+}
+// Lanes: newest branches take the innermost free lane, so a branch never has to cross an
+// older one on its way out from the time line.
+const sorted = [...branches.values()].sort((a, b) => b.start.localeCompare(a.start));
+const placed: Branch[] = [];
+for (const b of sorted) {
+	let lane = 1;
+	while (placed.some((p) => p.lane === lane && p.start <= b.end && b.start <= p.end)) lane++;
+	b.lane = lane;
+	placed.push(b);
+}
+const nLanes = Math.max(1, ...placed.map((b) => b.lane));
 
 const LANE_W = 24;
-const laneX = (k: LaneKey | 'stub') => LANE_W / 2 + LANE_W * (k === 'stub' ? 1 : LANES.indexOf(k));
-const W = LANE_W * LANES.length;
-const C = 22; // height of a branch curve
-const curve = (x1: number) => `M ${laneX('main')} ${C} C ${laneX('main')} ${C * 0.4}, ${x1} ${C * 0.6}, ${x1} 0`;
+const xOf = (lane: number) => LANE_W / 2 + LANE_W * lane;
+const W = LANE_W * (nLanes + 1);
+const C = 22;
+const curve = (x1: number) => `M ${xOf(0)} ${C} C ${xOf(0)} ${C * 0.4}, ${x1} ${C * 0.6}, ${x1} 0`;
+const last = rows.length - 1;
 
-type Seg = { lane: LaneKey; part: 'full' | 'up' | 'down' };
-const segments = (i: number): Seg[] =>
-	LANES.flatMap((lane) => {
-		const { top, bottom } = span[lane];
-		if (i < top || i > bottom || top === bottom) return [];
-		if (i === bottom) return [{ lane, part: 'up' as const }];
-		if (i === top) return [{ lane, part: 'down' as const }];
-		return [{ lane, part: 'full' as const }];
-	});
+type Seg = { x: number; part: 'full' | 'up'; cls: string };
+const segments = (i: number): Seg[] => {
+	const out: Seg[] = [{ x: xOf(0), part: i === last ? 'up' : 'full', cls: 'spine' }];
+	for (const b of branches.values()) {
+		if (i > b.startRow || i < b.topRow || b.topRow === b.startRow) continue;
+		const cls = `b-${b.key === 'jinr' ? 'jinr' : 'other'} ${i === b.topRow && b.end !== NOW ? 'cap' : ''}`;
+		out.push({ x: xOf(b.lane), part: i === b.startRow ? 'up' : 'full', cls });
+	}
+	return out;
+};
 
 const years = (e: Entry) => {
 	const a = e.start.slice(0, 4);
-	const b = e.end ? e.end.slice(0, 4) : e.kind === 'milestone' ? a : 'present';
+	const b = e.kind === 'milestone' ? a : e.end ? e.end.slice(0, 4) : 'present';
 	return a === b ? a : `${a} – ${b}`;
 };
 const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
+const style = (e: Entry) =>
+	e.kind === 'milestone' ? 'mile' : onSpine(e) || e.lane ? 'main' : 'sub';
 ---
 
 <ol class="tl" style={`--w:${W}px; --c:${C}px`}>
 	{
 		rows.map((e, i) => {
-			const lane = laneOf(e);
-			const branches = lane !== 'main' && (lane === 'stub' || i === span[lane].bottom);
-			const style = lane === 'stub' ? 'sub' : e.kind === 'milestone' ? 'mile' : 'main';
+			const b = onSpine(e) ? undefined : branches.get(keyOf(e));
+			const x = b ? xOf(b.lane) : xOf(0);
+			const s = style(e);
 			return (
-				<li class={`row ${style}`}>
+				<li class={`row ${s}`}>
 					<div class="when">{years(e)}</div>
 					<div class="graph" aria-hidden="true">
-						{segments(i).map((s) => (
-							<span class={`line ${s.part} l-${s.lane} ${i === 0 ? 'top' : ''}`} style={`left:${laneX(s.lane) - 1}px`} />
+						{segments(i).map((g) => (
+							<span class={`line ${g.part} ${g.cls}`} style={`left:${g.x - 1}px`} />
 						))}
-						{branches && (
-							<svg class={`curve l-${lane}`} width={W} height={C} viewBox={`0 0 ${W} ${C}`}>
-								<path d={curve(laneX(lane))} />
+						{b && b.startRow === i && (
+							<svg class={`curve ${b.key === 'jinr' ? 'b-jinr' : ''}`} width={W} height={C} viewBox={`0 0 ${W} ${C}`}>
+								<path d={curve(x)} />
 							</svg>
 						)}
-						<span class={`dot d-${style} l-${lane}`} style={`left:${laneX(lane)}px`} />
+						<span class={`dot d-${s} ${b ? 'on-branch' : 'on-spine'} ${b?.key === 'jinr' ? 'b-jinr' : ''}`} style={`left:${x}px`} />
 					</div>
 					<div class="what">
 						<span class="title">{href(e) ? <a href={href(e)}>{e.title}</a> : e.title}</span>
 						<span class="org">{e.org.split(' · ')[0]}</span>
-						{style === 'main' && e.earlier && <span class="earlier">{e.earlier}</span>}
-						{style === 'main' && e.short && <p>{e.short}</p>}
-						{style === 'mile' && <span class="org">· {e.short}</span>}
+						{s === 'main' && e.earlier && <span class="earlier">{e.earlier}</span>}
+						{s === 'main' && e.short && <p>{e.short}</p>}
+						{s === 'mile' && e.short && <span class="org note">{e.short}</span>}
 					</div>
 				</li>
 			);
@@ -140,10 +162,16 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 		bottom: auto;
 		height: var(--dot-y);
 	}
-	.line.down {
-		top: var(--dot-y);
+	.line.cap::before {
+		content: '';
+		position: absolute;
+		top: -1px;
+		left: -3px;
+		width: 8px;
+		height: 2px;
+		background: inherit;
 	}
-	.line.l-jinr {
+	.line.b-jinr {
 		background: var(--teal);
 	}
 	.curve {
@@ -156,7 +184,7 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 		stroke-width: 2;
 		stroke-linecap: round;
 	}
-	.curve.l-jinr {
+	.curve.b-jinr {
 		stroke: var(--teal);
 	}
 
@@ -175,13 +203,16 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 		border: 3px solid var(--line-strong);
 		box-sizing: border-box;
 	}
-	.d-main.l-jinr {
+	.d-main.on-spine {
+		border-color: var(--text-strong);
+	}
+	.d-main.b-jinr {
 		border-color: var(--teal);
 	}
 	.d-mile {
 		width: 10px;
 		height: 10px;
-		background: var(--line-strong);
+		background: var(--text-strong);
 	}
 	.d-sub {
 		width: 8px;
@@ -212,8 +243,11 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 		font-size: 0.9rem;
 		color: var(--text-muted);
 	}
-	.mile .org + .org {
-		margin-left: 0.3rem;
+	.note {
+		margin-left: 0.4rem;
+	}
+	.note::before {
+		content: '· ';
 	}
 	.earlier {
 		display: block;
