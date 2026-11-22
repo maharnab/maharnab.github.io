@@ -3,7 +3,6 @@ import { getCollection } from 'astro:content';
 import Page from '../layouts/Page.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { AFFILIATION, LINKS, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { ecalPapers, TOTAL_PAPER_COUNT } from '../data/publications';
 import { timeline } from '../data/timeline';
 
 const featured = (await getCollection('projects'))
@@ -38,15 +37,6 @@ const posts = (await getCollection('blog'))
 		<img class="headshot" src="/images/work/headshot.jpg" alt="Portrait of Maharnab Bhattacharjee" width="220" height="228" />
 	</section>
 
-	<section class="panel">
-		<div class="metrics">
-			<div class="metric"><div class="value">38,400</div><div class="label">detector channels calibrated end to end</div></div>
-			<div class="metric"><div class="value">2,400</div><div class="label">SiPM readout boards characterised</div></div>
-			<div class="metric"><div class="value">50</div><div class="label">calorimeter sectors certified for installation</div></div>
-			<div class="metric"><div class="value">{TOTAL_PAPER_COUNT}</div><div class="label">papers on INSPIRE-HEP ({ecalPapers.length} detector papers, 2 first-author)</div></div>
-			<div class="metric"><div class="value">12+ yrs</div><div class="label">instrumentation, data and software</div></div>
-		</div>
-	</section>
 
 	<section class="panel">
 		<h2>Selected projects</h2>
