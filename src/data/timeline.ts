@@ -15,7 +15,9 @@ export type Entry = {
 	kind: Kind;
 	earlier?: string; // earlier title in the same position, shown under the title
 	// Home-page timeline: entries with the same lane are drawn as one continuous branch.
-	lane?: 'jinr' | 'advisor';
+	lane?: string;
+	endTitle?: string; // home page: adds an end event with this title at `end`
+	startLabel?: string; // home page: date shown for the start event (default 'Mon YYYY')
 };
 
 export const kindLabel: Record<Kind, string> = {
@@ -29,13 +31,22 @@ export const timeline: Entry[] = [
 	{
 		start: '2024-10',
 		period: '2024 – present',
-		title: 'Research Scientist',
-		earlier: 'Promoted from Junior Research Scientist in May 2026',
+		title: 'Full-time on NICA-MPD',
 		org: 'LHEP, JINR · NICA-MPD electromagnetic calorimeter',
-		short: 'Full-time on the MPD electromagnetic calorimeter: calibration, QA and data analysis.',
+		short: 'Calibration, QA and data analysis for the MPD electromagnetic calorimeter.',
 		text: 'Full-time NICA-MPD work since submitting the PhD thesis (Oct 2024); Research Scientist since May 2026. Cosmic-ray testing of the half-sectors before installation, then analysis of cosmic and beam (collision) data recorded with the calorimeter inside MPD. C++/Python pipelines for calibration, equalisation, waveform quality control and live-monitoring prototypes.',
 		project: 'mpd-ecal-data-analysis',
 		kind: 'work',
+		lane: 'jinr',
+	},
+	{
+		start: '2026-05',
+		period: 'May 2026',
+		title: 'Promoted to Research Scientist',
+		org: 'LHEP, JINR',
+		short: '',
+		text: '',
+		kind: 'milestone',
 		lane: 'jinr',
 	},
 	{
@@ -46,6 +57,7 @@ export const timeline: Entry[] = [
 		short: 'Thesis submitted Oct 2024.',
 		text: '',
 		kind: 'milestone',
+		lane: 'phd',
 	},
 	{
 		start: '2019-05',
@@ -61,6 +73,7 @@ export const timeline: Entry[] = [
 	},
 	{
 		start: '2022-01',
+		startLabel: '2022',
 		period: '2022 – present',
 		title: 'Technical & Scientific Advisor',
 		org: 'DSRL (startup), Technology Incubation Centre, IIT Guwahati',
@@ -90,6 +103,7 @@ export const timeline: Entry[] = [
 		text: 'Thesis: "Simulation and Reconstruction of Electromagnetic Shower and Design and Development of Readout Electronics for SiPM". Submitted Oct 2024, awarded Oct 2025. Supervisors: Prof. E. Saikia, Prof. B. Bhuyan.',
 		project: 'dune-nd-ecal-simulation',
 		kind: 'education',
+		lane: 'phd',
 	},
 	{
 		start: '2016-09',
@@ -133,6 +147,8 @@ export const timeline: Entry[] = [
 		short: '',
 		text: 'Master of Science in Physical Science, Institute of Science and Technology, Gauhati University.',
 		kind: 'education',
+		lane: 'ms',
+		endTitle: 'MS completed',
 	},
 	{
 		start: '2013-06',
@@ -144,6 +160,8 @@ export const timeline: Entry[] = [
 		text: 'Nine-month internship after the BS, testing mirror actuators for the Thirty Meter Telescope.',
 		project: 'tmt-actuator-test-software',
 		kind: 'project',
+		lane: 'tmt',
+		endTitle: 'Internship completed',
 	},
 	{
 		start: '2013-01',
@@ -175,6 +193,8 @@ export const timeline: Entry[] = [
 		short: '',
 		text: 'Bachelor of Science in Physical Science, Institute of Science and Technology, Gauhati University.',
 		kind: 'education',
+		lane: 'bs',
+		endTitle: 'BS completed',
 	},
 ];
 

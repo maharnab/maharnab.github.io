@@ -1,112 +1,145 @@
 ---
-// Home-page timeline, newest at the top. One time line runs from the first entry to the present;
-// degrees and other sequential stages sit on it. Every activity that ran in parallel branches off
-// at its start and runs alongside for as long as it lasted (several branches when several overlap).
-// Branches never merge back. Entries sharing a `lane` are drawn as one continuous branch.
-import { timeline, type Entry } from '../data/timeline';
+// Home-page timeline, newest at the top.
+//   level 0: the time line itself – one plain line from the first entry to the present.
+//   level 1: every main item (degree, position, internship) branches off the time line as a
+//            subline running for its duration.
+//   level 2: activities that took place within a degree branch off that degree's subline.
+// Lines never merge back. Entries that share a `lane` are drawn as one continuous subline.
+import { timeline as entries, type Entry } from '../data/timeline';
 
-const months = (ym: string) => Number(ym.slice(0, 4)) * 12 + Number(ym.slice(5, 7));
+// Every row is one event at one date. Entries with `endTitle` also get an end event.
+const timeline: Entry[] = [
+	...entries,
+	...entries
+		.filter((e) => e.endTitle && e.end)
+		.map((e) => ({
+			start: e.end!, period: '', title: e.endTitle!, org: '', short: '', text: '',
+			kind: 'milestone' as const, lane: e.lane,
+		})),
+];
+
 const NOW = '9999-12';
-const endOf = (e: Entry) => e.end ?? NOW;
+const months = (ym: string) => Number(ym.slice(0, 4)) * 12 + Number(ym.slice(5, 7));
 
-// On the time line: degrees, milestones, and anything that did not run inside a degree.
-const degrees = timeline.filter((e) => e.kind === 'education');
-const insideDegree = (e: Entry) =>
-	!!e.end &&
-	degrees.some(
-		(d) => d.start <= e.start && e.start <= endOf(d) && months(e.end!) <= months(endOf(d)) + 2,
+type Group = {
+	key: string;
+	members: Entry[];
+	start: string;
+	end: string;
+	open: boolean;
+	level: 1 | 2;
+	parent?: Group;
+	lane: number;
+	startRow: number;
+	topRow: number;
+};
+
+// Build groups: entries sharing a lane form one subline; every other entry is its own.
+const groups = new Map<string, Group>();
+for (const e of timeline) {
+	const key = e.lane ?? `${e.start}|${e.title}`;
+	const g = groups.get(key) ?? {
+		key, members: [], start: e.start, end: '', open: false, level: 1, lane: 0, startRow: 0, topRow: 0,
+	};
+	g.members.push(e);
+	groups.set(key, g);
+}
+for (const g of groups.values()) {
+	g.start = g.members.map((e) => e.start).sort()[0];
+	g.open = g.members.some((e) => !e.end && e.kind !== 'milestone');
+	g.end = g.open
+		? NOW
+		: g.members.map((e) => (e.kind === 'milestone' ? e.start : e.end!)).sort().at(-1)!;
+}
+const groupOf = (e: Entry) => groups.get(e.lane ?? `${e.start}|${e.title}`)!;
+
+// Level 2: anything (not itself a degree) that lies within a degree, 2 months' tolerance.
+const degreeGroups = [...groups.values()].filter((g) => g.members.some((e) => e.kind === 'education'));
+for (const g of groups.values()) {
+	if (degreeGroups.includes(g) || g.open) continue;
+	const p = degreeGroups.find(
+		(d) => d.start <= g.start && g.start <= d.end && months(g.end) <= months(d.end) + 2,
 	);
-const onSpine = (e: Entry) =>
-	!e.lane && (e.kind === 'education' || e.kind === 'milestone' || !insideDegree(e));
-
-const rows = [...timeline].sort(
-	(a, b) => b.start.localeCompare(a.start) || Number(onSpine(a)) - Number(onSpine(b)),
-);
-
-// Branches: one per lane, or one per standalone parallel entry.
-type Branch = { key: string; start: string; end: string; lane: number; startRow: number; topRow: number };
-const keyOf = (e: Entry) => e.lane ?? `${e.start}|${e.title}`;
-const branches = new Map<string, Branch>();
-rows.forEach((e, i) => {
-	if (onSpine(e)) return;
-	const k = keyOf(e);
-	const b = branches.get(k);
-	if (!b) branches.set(k, { key: k, start: e.start, end: endOf(e), lane: 0, startRow: i, topRow: i });
-	else {
-		b.start = e.start < b.start ? e.start : b.start;
-		b.end = endOf(e) > b.end ? endOf(e) : b.end;
-		b.startRow = Math.max(b.startRow, i);
+	if (p) {
+		g.level = 2;
+		g.parent = p;
 	}
-});
-// A branch runs up through every newer row that started before it ended.
-for (const b of branches.values()) {
-	let k = b.startRow;
-	while (k > 0 && rows[k - 1].start <= b.end) k--;
-	b.topRow = k;
 }
-// Lanes: newest branches take the innermost free lane, so a branch never has to cross an
-// older one on its way out from the time line.
-const sorted = [...branches.values()].sort((a, b) => b.start.localeCompare(a.start));
-const placed: Branch[] = [];
-for (const b of sorted) {
-	let lane = 1;
-	while (placed.some((p) => p.lane === lane && p.start <= b.end && b.start <= p.end)) lane++;
-	b.lane = lane;
-	placed.push(b);
-}
-const nLanes = Math.max(1, ...placed.map((b) => b.lane));
 
-const LANE_W = 24;
+// Rows: one per entry, newest first; on a tie the deeper item goes above (it branches off below).
+const rows = [...timeline].sort(
+	(a, b) => b.start.localeCompare(a.start) || groupOf(b).level - groupOf(a).level,
+);
+for (const g of groups.values()) {
+	g.startRow = Math.max(...g.members.map((e) => rows.indexOf(e)));
+	let k = g.startRow;
+	while (k > 0 && rows[k - 1].start <= g.end) k--;
+	g.topRow = k;
+}
+
+// Lanes (lane 0 is the time line). Newest groups take the innermost free lane, so a new line
+// never crosses an older one on its way out. Sub-sublines sit outside their parent.
+const all = [...groups.values()];
+const byNewest = (a: Group, b: Group) => b.start.localeCompare(a.start);
+for (const level of [1, 2] as const) {
+	for (const g of all.filter((x) => x.level === level).sort(byNewest)) {
+		let lane = (g.parent?.lane ?? 0) + 1;
+		while (all.some((o) => o !== g && o.lane === lane && o.start <= g.end && g.start <= o.end)) lane++;
+		g.lane = lane;
+	}
+}
+const nLanes = Math.max(...all.map((g) => g.lane));
+
+const LANE_W = 22;
 const xOf = (lane: number) => LANE_W / 2 + LANE_W * lane;
 const W = LANE_W * (nLanes + 1);
 const C = 22;
-const curve = (x1: number) => `M ${xOf(0)} ${C} C ${xOf(0)} ${C * 0.4}, ${x1} ${C * 0.6}, ${x1} 0`;
+const curve = (x0: number, x1: number) => `M ${x0} ${C} C ${x0} ${C * 0.4}, ${x1} ${C * 0.6}, ${x1} 0`;
 const last = rows.length - 1;
 
-type Seg = { x: number; part: 'full' | 'up'; cls: string };
+type Seg = { x: number; part: 'full' | 'up' | 'down' | 'start'; cls: string };
 const segments = (i: number): Seg[] => {
-	const out: Seg[] = [{ x: xOf(0), part: i === last ? 'up' : 'full', cls: 'spine' }];
-	for (const b of branches.values()) {
-		if (i > b.startRow || i < b.topRow || b.topRow === b.startRow) continue;
-		const cls = `b-${b.key === 'jinr' ? 'jinr' : 'other'} ${i === b.topRow && b.end !== NOW ? 'cap' : ''}`;
-		out.push({ x: xOf(b.lane), part: i === b.startRow ? 'up' : 'full', cls });
+	const out: Seg[] = [{ x: xOf(0), part: i === last ? 'start' : 'full', cls: 'time' }];
+	for (const g of all) {
+		if (i > g.startRow || i < g.topRow || g.topRow === g.startRow) continue;
+		const cls = `g-${g.key} lv${g.level}`;
+		if (i === g.startRow) out.push({ x: xOf(g.lane), part: 'up', cls });
+		else if (i === g.topRow && !g.open && g.members.includes(rows[i])) out.push({ x: xOf(g.lane), part: 'down', cls });
+		else if (i === g.topRow && !g.open && rows[i].start === g.end) out.push({ x: xOf(g.lane), part: 'down', cls: `${cls} cap` });
+		else out.push({ x: xOf(g.lane), part: 'full', cls: `${cls} ${i === g.topRow && !g.open ? 'cap' : ''}` });
 	}
 	return out;
 };
 
-const years = (e: Entry) => {
-	const a = e.start.slice(0, 4);
-	const b = e.kind === 'milestone' ? a : e.end ? e.end.slice(0, 4) : 'present';
-	return a === b ? a : `${a} – ${b}`;
-};
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const when = (e: Entry) => e.startLabel ?? `${MON[Number(e.start.slice(5, 7)) - 1]} ${e.start.slice(0, 4)}`;
 const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
-const style = (e: Entry) =>
-	e.kind === 'milestone' ? 'mile' : onSpine(e) || e.lane ? 'main' : 'sub';
 ---
 
-<ol class="tl" style={`--w:${W}px; --c:${C}px`}>
+<ol class="tl" style={`--w:${W}px`}>
 	{
 		rows.map((e, i) => {
-			const b = onSpine(e) ? undefined : branches.get(keyOf(e));
-			const x = b ? xOf(b.lane) : xOf(0);
-			const s = style(e);
+			const g = groupOf(e);
+			const first = g.startRow === i;
+			const s = e.kind === 'milestone' ? 'mile' : g.level === 2 ? 'sub' : 'main';
+			const from = g.parent ? xOf(g.parent.lane) : xOf(0);
 			return (
 				<li class={`row ${s}`}>
-					<div class="when">{years(e)}</div>
+					<div class="when">{when(e)}</div>
 					<div class="graph" aria-hidden="true">
-						{segments(i).map((g) => (
-							<span class={`line ${g.part} ${g.cls}`} style={`left:${g.x - 1}px`} />
+						{segments(i).map((sg) => (
+							<span class={`line ${sg.part} ${sg.cls}`} style={`left:${sg.x - 1}px`} />
 						))}
-						{b && b.startRow === i && (
-							<svg class={`curve ${b.key === 'jinr' ? 'b-jinr' : ''}`} width={W} height={C} viewBox={`0 0 ${W} ${C}`}>
-								<path d={curve(x)} />
+						{first && (
+							<svg class={`curve g-${g.key} lv${g.level}`} width={W} height={C} viewBox={`0 0 ${W} ${C}`}>
+								<path d={curve(from, xOf(g.lane))} />
 							</svg>
 						)}
-						<span class={`dot d-${s} ${b ? 'on-branch' : 'on-spine'} ${b?.key === 'jinr' ? 'b-jinr' : ''}`} style={`left:${x}px`} />
+						<span class={`dot d-${s} ${first ? 'first' : ''} g-${g.key}`} style={`left:${xOf(g.lane)}px`} />
 					</div>
 					<div class="what">
 						<span class="title">{href(e) ? <a href={href(e)}>{e.title}</a> : e.title}</span>
-						<span class="org">{e.org.split(' · ')[0]}</span>
+						{s !== 'mile' && <span class="org">{e.org.split(' · ')[0]}</span>}
 						{s === 'main' && e.earlier && <span class="earlier">{e.earlier}</span>}
 						{s === 'main' && e.short && <p>{e.short}</p>}
 						{s === 'mile' && e.short && <span class="org note">{e.short}</span>}
@@ -158,9 +191,21 @@ const style = (e: Entry) =>
 		bottom: 0;
 		background: var(--line-strong);
 	}
+	.line.time {
+		background: var(--text-strong);
+		opacity: 0.55;
+	}
 	.line.up {
 		bottom: auto;
 		height: var(--dot-y);
+	}
+	.line.down {
+		top: var(--dot-y);
+	}
+	/* the time line starts where the oldest subline branches off */
+	.line.start {
+		bottom: auto;
+		height: calc(var(--dot-y) + 22px);
 	}
 	.line.cap::before {
 		content: '';
@@ -171,7 +216,7 @@ const style = (e: Entry) =>
 		height: 2px;
 		background: inherit;
 	}
-	.line.b-jinr {
+	.line.g-jinr {
 		background: var(--teal);
 	}
 	.curve {
@@ -184,7 +229,10 @@ const style = (e: Entry) =>
 		stroke-width: 2;
 		stroke-linecap: round;
 	}
-	.curve.b-jinr {
+	.curve.lv1 {
+		stroke: color-mix(in srgb, var(--text-strong) 55%, transparent);
+	}
+	.curve.g-jinr {
 		stroke: var(--teal);
 	}
 
@@ -200,13 +248,15 @@ const style = (e: Entry) =>
 		width: 16px;
 		height: 16px;
 		background: var(--surface);
-		border: 3px solid var(--line-strong);
+		border: 3px solid var(--text-strong);
 		box-sizing: border-box;
 	}
-	.d-main.on-spine {
-		border-color: var(--text-strong);
+	.d-main:not(.first) {
+		width: 12px;
+		height: 12px;
+		border-width: 2px;
 	}
-	.d-main.b-jinr {
+	.d-main.g-jinr {
 		border-color: var(--teal);
 	}
 	.d-mile {
