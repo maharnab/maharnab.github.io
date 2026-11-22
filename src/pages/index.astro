@@ -117,17 +117,36 @@ const areas = [
 	</section>
 
 	<section class="panel">
-		<h2>Path so far</h2>
-		<ul class="flat-list">
+		<h2>Background</h2>
+		<ol class="path">
 			{
-				timeline.slice(0, 6).map((t) => (
-					<li>
-						<span class="muted">{t.period}</span> · <strong>{t.title}</strong> — {t.org}
+				timeline.map((t) => (
+					<li class={t.kind}>
+						<span class="dot" aria-hidden="true" />
+						<div class="when">{t.period}</div>
+						<div class="what">
+							<span class="title">{t.title}</span>
+							<span class="org">{t.org}</span>
+							<p>
+								{t.short}
+								{t.project && (
+									<>
+										{' '}
+										<a href={`/projects/${t.project}/`}>Details</a>
+									</>
+								)}
+							</p>
+						</div>
 					</li>
 				))
 			}
-		</ul>
-		<p><a href="/about">Full background →</a></p>
+		</ol>
+		<p class="legend">
+			<span class="k work">work</span>
+			<span class="k education">education</span>
+			<span class="k internship">internship</span>
+			<a href="/about">Full background →</a>
+		</p>
 	</section>
 
 	{
@@ -162,6 +181,101 @@ const areas = [
 		padding-top: 0.5rem;
 		font-size: 0.85rem;
 		color: var(--text-muted);
+	}
+	.path {
+		list-style: none;
+		margin: 0.4rem 0 0;
+		padding: 0;
+		position: relative;
+	}
+	.path::before {
+		content: '';
+		position: absolute;
+		left: 6px;
+		top: 0.6rem;
+		bottom: 0.6rem;
+		width: 2px;
+		background: var(--line-soft);
+	}
+	.path li {
+		position: relative;
+		display: grid;
+		grid-template-columns: 130px minmax(0, 1fr);
+		gap: 1rem;
+		padding: 0.55rem 0 0.55rem 1.8rem;
+	}
+	.path .dot {
+		position: absolute;
+		left: 0;
+		top: 0.95rem;
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		border: 3px solid var(--surface);
+		background: var(--teal);
+		box-shadow: 0 0 0 1px var(--line-strong);
+	}
+	.path li.education .dot {
+		background: var(--accent);
+	}
+	.path li.internship .dot {
+		background: var(--text-muted);
+	}
+	.path .when {
+		font-size: 0.88rem;
+		color: var(--text-muted);
+		padding-top: 0.2rem;
+		white-space: nowrap;
+	}
+	.path .title {
+		font-weight: 600;
+		color: var(--text-strong);
+		margin-right: 0.5rem;
+	}
+	.path .org {
+		font-size: 0.9rem;
+		color: var(--teal);
+	}
+	.path p {
+		margin: 0.15rem 0 0;
+		font-size: 0.95rem;
+	}
+	.path p a {
+		font-size: 0.85rem;
+		white-space: nowrap;
+	}
+	.legend {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 1.1rem;
+		margin-top: 0.8rem;
+		font-size: 0.85rem;
+		color: var(--text-muted);
+	}
+	.legend .k::before {
+		content: '';
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		margin-right: 0.35rem;
+		background: var(--teal);
+	}
+	.legend .k.education::before {
+		background: var(--accent);
+	}
+	.legend .k.internship::before {
+		background: var(--text-muted);
+	}
+	.legend a {
+		margin-left: auto;
+	}
+	@media (max-width: 640px) {
+		.path li {
+			grid-template-columns: 1fr;
+			gap: 0;
+		}
 	}
 	.subtitle {
 		margin: 0 0 0.6rem;
