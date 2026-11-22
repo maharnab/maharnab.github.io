@@ -106,36 +106,46 @@ const posts = (await getCollection('blog'))
 		font-size: 1.05rem;
 		color: var(--teal);
 	}
-	.hero::after {
-		content: '';
-		display: block;
-		clear: both;
+	.hero {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 230px;
+		gap: 2.2rem;
+		align-items: center;
+	}
+	.hero-text {
+		grid-column: 1;
+		grid-row: 1;
 	}
 	.headshot {
-		float: right;
+		grid-column: 2;
+		grid-row: 1;
 		width: 230px;
 		height: 230px;
-		margin: 0.4rem 0 0.6rem 1.6rem;
 		border-radius: 50%;
 		object-fit: cover;
 		object-position: center 30%;
 		border: 4px solid var(--surface-2);
 		box-shadow: var(--shadow);
-		shape-outside: circle(50%);
-		shape-margin: 1rem;
 	}
 	.hero .lede {
 		max-width: none;
 		text-align: justify;
 		hyphens: auto;
 	}
-	@media (max-width: 640px) {
+	@media (max-width: 760px) {
+		.hero {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
 		.headshot {
-			float: none;
-			display: block;
+			grid-column: 1;
+			grid-row: 1;
 			width: 150px;
 			height: 150px;
-			margin: 0 auto 1rem;
+			margin: 0 auto;
+		}
+		.hero-text {
+			grid-row: 2;
 		}
 		.hero .lede {
 			text-align: left;
