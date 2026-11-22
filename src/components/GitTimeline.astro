@@ -93,17 +93,29 @@ const nLanes = Math.max(...all.map((g) => g.lane));
 const LANE_W = 22;
 const xOf = (lane: number) => LANE_W / 2 + LANE_W * lane;
 const W = LANE_W * (nLanes + 1);
-// A branch is a curve followed by a short straight run into the dot. The curve rises one lane
-// width for each lane it crosses, so every branch leaves its parent at the same angle however
-// far it travels. Rows that start a branch are tall enough to hold it, so a branch always leaves
-// its parent line inside its own row, never at the parent's circle below.
+// A branch is a curve followed by a short straight run into the dot. A one-lane branch is an
+// S-curve; a longer one is the same S split at its middle, with a straight piece at the S's
+// middle slope in between. So every branch has the same angle and the same size of bend.
+// Rows that start a branch are tall enough to hold it, so a branch always leaves its parent
+// line inside its own row, never at the parent's circle below.
 const S = 15;
-const rise = (g: Group) => (g.lane - (g.parent ? g.parent.lane : 0)) * LANE_W;
+const SLOPE = 0.6; // rise per unit across at the middle of the one-lane S-curve
+const across = (g: Group) => (g.lane - (g.parent ? g.parent.lane : 0)) * LANE_W;
+const rise = (g: Group) => LANE_W + SLOPE * (across(g) - LANE_W);
 const hOf = (g: Group) => S + rise(g);
 const C = S + LANE_W;
-const curve = (x0: number, x1: number, c: number) => {
-	const h = S + c;
-	return `M ${x0} ${h} C ${x0} ${S + c * 0.4}, ${x1} ${S + c * 0.6}, ${x1} ${S} L ${x1} 0`;
+const curve = (x0: number, x1: number) => {
+	const L = LANE_W;
+	const E = x1 - x0 - L; // extra distance covered by the straight piece
+	const yb = S + L + SLOPE * E; // bottom, on the parent line
+	const xm = x0 + L / 2;
+	const ym = yb - L / 2;
+	const xn = xm + E;
+	const yn = ym - SLOPE * E;
+	return (
+		`M ${x0} ${yb} C ${x0} ${yb - 0.2 * L}, ${x0 + 0.25 * L} ${yb - 0.35 * L}, ${xm} ${ym} ` +
+		`L ${xn} ${yn} C ${xn + 0.25 * L} ${yn - 0.15 * L}, ${x1} ${yn - 0.3 * L}, ${x1} ${S} L ${x1} 0`
+	);
 };
 const last = rows.length - 1;
 
@@ -146,7 +158,7 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 						))}
 						{first && (
 							<svg class={`curve g-${g.key} lv${g.level}`} width={W} height={hOf(g)} viewBox={`0 0 ${W} ${hOf(g)}`}>
-								<path d={curve(from, xOf(g.lane), rise(g))} />
+								<path d={curve(from, xOf(g.lane))} />
 							</svg>
 						)}
 						<span class="leader" style={`left:${xOf(g.lane) + 6}px`} />
