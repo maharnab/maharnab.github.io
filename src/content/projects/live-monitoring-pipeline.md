@@ -5,7 +5,7 @@ period: '2026'
 org: LHEP, JINR · NICA-MPD ECAL
 role: System design, receiver implementation and benchmarking.
 order: 4
-featured: true
+featured: false
 cover: /images/work/monitoring_pipeline.svg
 coverAlt: Data-path diagram from detector to live UI
 skills: [C++17, Python, PostgreSQL, Docker Compose, performance profiling, system design, TCP]
