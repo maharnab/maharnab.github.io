@@ -28,7 +28,6 @@ const projects = defineCollection({
 			cover: z.string().optional(), // path under /public
 			coverAlt: z.string().optional(),
 			skills: z.array(z.string()).default([]),
-			metrics: z.array(z.object({ value: z.string(), label: z.string() })).default([]),
 			links: z.array(z.object({ label: z.string(), href: z.string() })).default([]),
 			needsInput: z.boolean().default(false), // shows a "draft – needs your input" badge
 		}),

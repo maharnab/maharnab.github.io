@@ -9,10 +9,6 @@ featured: false
 cover: /images/work/module_cosmic_fits.png
 coverAlt: Grid of per-channel cosmic-muon response fits
 skills: [C++, ROOT, RooFit, Python, Landau fits, batch processing]
-metrics:
-  - { value: '2,400', label: 'modules, 16 towers each' }
-  - { value: '23,984', label: 'towers in the producer comparison' }
-  - { value: '30–280 MeV', label: 'electron-beam energies' }
 links:
   - { label: 'Paper: J. Phys. Conf. Ser. 1690 (2020)', href: 'https://doi.org/10.1088/1742-6596/1690/1/012052' }
 ---

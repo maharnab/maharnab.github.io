@@ -9,9 +9,6 @@ featured: true
 cover: /images/work/tmt_test_station.svg
 coverAlt: Diagram of the actuator test station, embedded server and GUI
 skills: [C++, Qt, embedded C, pthreads, TCP sockets, real-time plotting, hardware testing]
-metrics:
-  - { value: '3', label: 'subsystems tested per actuator' }
-  - { value: '9 months', label: 'on-site at the test station' }
 links:
   - { label: 'GUI code (GitHub)', href: 'https://github.com/maharnab/tactsof' }
   - { label: 'Server code (GitHub)', href: 'https://github.com/maharnab/tactsof-server-side' }

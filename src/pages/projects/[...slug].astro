@@ -29,18 +29,6 @@ const next = all[i + 1];
 			<h1>{d.title}</h1>
 			<p class="lede">{d.summary}</p>
 			{d.role && <p class="muted"><strong>My role:</strong> {d.role}</p>}
-			{
-				d.metrics.length > 0 && (
-					<div class="metrics">
-						{d.metrics.map((m) => (
-							<div class="metric">
-								<div class="value">{m.value}</div>
-								<div class="label">{m.label}</div>
-							</div>
-						))}
-					</div>
-				)
-			}
 			<ul class="tags">
 				{d.skills.map((s) => <li>{s}</li>)}
 			</ul>

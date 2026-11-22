@@ -9,11 +9,6 @@ featured: true
 cover: /images/work/board_halfsector_voltage_map.png
 coverAlt: Heat map of mean board voltage across 50 calorimeter half-sectors
 skills: [C++17, Python, ROOT RNTuple, pandas, statistical fitting, GNU Parallel, data reconciliation]
-metrics:
-  - { value: '2,752', label: 'boards tested (2,400 installed + 352 spare)' }
-  - { value: '38,400', label: 'SiPM channels, one operating voltage each' }
-  - { value: '3,877', label: 'test files reconciled against the board roster' }
-  - { value: '6', label: 'board types compared across producers' }
 ---
 
 ## The problem

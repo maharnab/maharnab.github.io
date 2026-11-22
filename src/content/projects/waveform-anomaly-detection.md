@@ -9,10 +9,6 @@ featured: true
 cover: /images/work/waveform_anomaly_examples.png
 coverAlt: Normal SiPM pulses next to examples flagged as anomalous
 skills: [C++17, streaming I/O, anomaly detection, feature engineering, class imbalance, Python, unit testing]
-metrics:
-  - { value: '60', label: 'samples per waveform, 38,400 channels' }
-  - { value: '~0.1%', label: 'anomaly rate: heavy class imbalance' }
-  - { value: '11+', label: 'anomaly codes from a JSON rule schema' }
 needsInput: true
 ---
 

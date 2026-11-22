@@ -9,9 +9,6 @@ featured: true
 cover: /images/work/sim_energy_resolution.png
 coverAlt: Energy resolution versus incident energy with a fitted resolution function
 skills: [C++, Geant4, ROOT, Python, DBSCAN, PCA, CMake, SLURM]
-metrics:
-  - { value: '6.7%/√E', label: 'stochastic term of the energy resolution' }
-  - { value: '3', label: 'detector geometries compared' }
 links:
   - { label: 'Code on GitHub', href: 'https://github.com/maharnab/ecalSimulation' }
 ---

@@ -9,10 +9,6 @@ featured: true
 cover: /images/work/monitoring_pipeline.svg
 coverAlt: Data-path diagram from detector to live UI
 skills: [C++17, Python, PostgreSQL, Docker Compose, performance profiling, system design, TCP]
-metrics:
-  - { value: '≈4.6 GB/s', label: 'raw input at 1,000 events/s' }
-  - { value: '768k', label: 'channel-waveforms per second to reduce' }
-  - { value: '38,400', label: 'channels on the live map' }
 needsInput: true
 ---
 

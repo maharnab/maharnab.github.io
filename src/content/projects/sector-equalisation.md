@@ -9,10 +9,6 @@ featured: true
 cover: /images/work/basket_equalisation_pilot.png
 coverAlt: Channel responses before and after equalisation
 skills: [Python, weighted least squares, model selection, robust statistics, RooFit, pytest]
-metrics:
-  - { value: '214 → 764', label: 'of 768 channels within ±10% of target' }
-  - { value: '50', label: 'half-sectors (768 channels each)' }
-  - { value: '2', label: 'correction iterations to converge' }
 links:
   - { label: 'Paper: Phys. Part. Nucl. 55 (2024)', href: 'https://doi.org/10.1134/S1063779624700217' }
   - { label: 'Paper: Phys. Part. Nucl. Lett. 22 (2025)', href: 'https://doi.org/10.1134/S1547477125701377' }
