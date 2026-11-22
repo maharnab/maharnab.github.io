@@ -62,7 +62,7 @@ export const timeline: Entry[] = [
 		period: 'Sep 2016 – Oct 2025',
 		title: 'PhD, Physical Science (Experimental HEP)',
 		org: 'Gauhati University · research at IIT Guwahati and JINR',
-		short: 'Electromagnetic shower simulation and reconstruction; SiPM readout electronics. Completed alongside the JINR position from 2019.',
+		short: 'Shower simulation and SiPM readout electronics; completed while at JINR.',
 		text: 'Thesis: "Simulation and Reconstruction of Electromagnetic Shower and Design and Development of Readout Electronics for SiPM". Submitted Nov 2024, awarded Oct 2025. Supervisors: Prof. E. Saikia, Prof. B. Bhuyan.',
 		project: 'dune-nd-ecal-simulation',
 		kind: 'education',
