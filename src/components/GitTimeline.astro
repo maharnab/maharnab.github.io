@@ -115,6 +115,11 @@ const segments = (i: number): Seg[] => {
 // Rows are evenly spaced, so mark the time line wherever a year or more is skipped.
 const GAP = 12;
 const gapAbove = (i: number) => (i > 0 ? months(rows[i - 1].start) - months(rows[i].start) : 0);
+const gapLabel = (m: number) => {
+	const half = Math.round(m / 6) / 2; // nearest half year
+	const whole = Math.floor(half);
+	return `${whole || ''}${half % 1 ? '½' : ''} yr`;
+};
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const when = (e: Entry) => e.startLabel ?? `${MON[Number(e.start.slice(5, 7)) - 1]} ${e.start.slice(0, 4)}`;
 const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
@@ -128,7 +133,7 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 			const s = e.kind === 'milestone' ? 'mile' : g.level === 2 ? 'sub' : 'main';
 			const from = g.parent ? xOf(g.parent.lane) : xOf(0);
 			return (
-				<li class={`row ${s}`}>
+				<li class={`row ${s} ${gapAbove(i) >= GAP ? 'gap' : ''}`}>
 					<div class="when">{when(e)}</div>
 					<div class="graph" aria-hidden="true">
 						{segments(i).map((sg) => (
@@ -140,7 +145,12 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 							</svg>
 						)}
 						<span class="leader" style={`left:${xOf(g.lane) + 6}px`} />
-						{gapAbove(i) >= GAP && <span class="brk" style={`left:${xOf(0)}px`} title={`${Math.round(gapAbove(i) / 12)} yr`} />}
+						{gapAbove(i) >= GAP && (
+							<>
+								<span class="brk" style={`left:${xOf(0)}px`} />
+								<span class="gap-label" style={`--x0:${xOf(0)}px`}>{gapLabel(gapAbove(i))}</span>
+							</>
+						)}
 						<span class={`dot d-${s} ${first ? 'first' : ''} g-${g.key}`} style={`left:${xOf(g.lane)}px`} />
 					</div>
 					<div class="what">
@@ -156,7 +166,7 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 	}
 </ol>
 <p class="more">
-	<span class="scale"><span class="brk-key" aria-hidden="true"></span> Events in order; spacing is not to scale. The break mark shows a gap of a year or more.</span>
+	<span class="scale"><span class="brk-key" aria-hidden="true"></span> Rows are evenly spaced, not to scale. Where a year or more passes between two consecutive events, the label shows how long.</span>
 	<slot />
 </p>
 
@@ -350,7 +360,38 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 		color: var(--accent);
 	}
 
-	/* break mark on the time line: skipped time */
+	/* skipped time: extra space above the row, a break mark and a label on the time line */
+	.row.gap {
+		--dot-y: calc(0.95rem + var(--gap-h));
+	}
+	.tl {
+		--gap-h: 1.3rem;
+	}
+	.row.gap .when {
+		padding-top: calc(0.45rem + var(--gap-h));
+	}
+	.row.gap .what {
+		padding-top: calc(0.35rem + var(--gap-h));
+	}
+	.gap-label {
+		position: absolute;
+		top: calc(var(--gap-h) / 2 + 0.1rem);
+		right: calc(100% - var(--x0) + 12px);
+		transform: translateY(-50%);
+		padding: 0 0.4rem;
+		font-size: 0.7rem;
+		line-height: 1.35;
+		letter-spacing: 0.02em;
+		white-space: nowrap;
+		color: var(--text-muted);
+		background: var(--surface-2);
+		border: 1px solid var(--line-soft);
+		border-radius: 999px;
+		font-variant-numeric: tabular-nums;
+	}
+	.brk {
+		top: calc(var(--gap-h) / 2 + 0.1rem - 4px) !important;
+	}
 	.brk,
 	.brk-key {
 		position: absolute;
@@ -372,6 +413,13 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 	}
 
 	@media (max-width: 640px) {
+		.row.gap .what {
+			padding-top: 0;
+		}
+		.gap-label {
+			right: auto;
+			left: calc(var(--x0) + 12px);
+		}
 		.row {
 			grid-template-columns: var(--w) minmax(0, 1fr);
 			column-gap: 0.6rem;
