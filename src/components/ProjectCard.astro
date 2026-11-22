@@ -23,7 +23,7 @@ const d = project.data;
 	<div class="body">
 		<p class="period">
 			{d.period} · {d.org}
-			{d.needsInput && <span class="badge-todo">draft</span>}
+			{import.meta.env.DEV && d.needsInput && <span class="badge-todo">draft</span>}
 		</p>
 		<h3>{d.title}</h3>
 		<p class="summary">{d.summary}</p>

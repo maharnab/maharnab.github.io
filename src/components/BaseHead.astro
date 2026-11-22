@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { LINKS, OG_IMAGE, SITE_TITLE, AFFILIATION } from '../consts';
+import { LINKS, OG_IMAGE, SITE_TITLE } from '../consts';
 
 interface Props {
 	title: string;
@@ -16,7 +16,10 @@ const person = {
 	'@context': 'https://schema.org',
 	'@type': 'Person',
 	name: SITE_TITLE,
-	jobTitle: AFFILIATION,
+	jobTitle: 'Research Scientist',
+	affiliation: { '@type': 'Organization', name: 'Joint Institute for Nuclear Research (JINR)', url: 'https://www.jinr.ru' },
+	alumniOf: { '@type': 'CollegeOrUniversity', name: 'Gauhati University' },
+	knowsAbout: ['Experimental particle physics', 'Calorimetry', 'Detector calibration', 'Data analysis', 'Machine learning'],
 	url: Astro.site?.toString(),
 	image: new URL(OG_IMAGE, Astro.site).toString(),
 	sameAs: [LINKS.github, LINKS.linkedin, LINKS.orcid, LINKS.inspire],

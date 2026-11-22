@@ -25,7 +25,7 @@ const next = all[i + 1];
 		<div class="prose">
 			<p class="eyebrow">
 				{d.period} · {d.org}
-				{d.needsInput && <span class="badge-todo">draft · needs your input</span>}
+				{import.meta.env.DEV && d.needsInput && <span class="badge-todo">draft · needs your input</span>}
 			</p>
 			<h1>{d.title}</h1>
 			<p class="lede">{d.summary}</p>

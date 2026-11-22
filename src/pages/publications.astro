@@ -46,7 +46,7 @@ const bold = (a: string) => a.replace(/(M\. Bhattacharjee)/, '<strong>$1</strong
 			<span class="title">{thesis.title}</span><br />
 			<span class="venue">{thesis.institution}, {thesis.year}</span>
 		</p>
-		{thesis.href ? <a href={thesis.href}>Full text</a> : <div class="todo">Add the Shodhganga / university repository link (not found online yet).</div>}
+		{thesis.href ? <a href={thesis.href}>Full text</a> : import.meta.env.DEV && <div class="todo">Add the Shodhganga / university repository link (not found online yet).</div>}
 	</section>
 
 </Page>
