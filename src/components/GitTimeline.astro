@@ -93,10 +93,17 @@ const nLanes = Math.max(...all.map((g) => g.lane));
 const LANE_W = 22;
 const xOf = (lane: number) => LANE_W / 2 + LANE_W * lane;
 const W = LANE_W * (nLanes + 1);
-const S = 15; // straight run into the dot (visible past the largest dot radius)
-const C = 22 + S; // total height of a branch: curve, then straight
-const curve = (x0: number, x1: number) =>
-	`M ${x0} ${C} C ${x0} ${S + (C - S) * 0.4}, ${x1} ${S + (C - S) * 0.6}, ${x1} ${S} L ${x1} 0`;
+// A branch is a curve followed by a short straight run into the dot. Level-2 branches (small
+// dots) use a shorter one. Rows that start a branch are tall enough to hold it, so a branch
+// always leaves its parent line inside its own row, never at the parent's circle below.
+const BR = { 1: { s: 15, c: 22 }, 2: { s: 11, c: 15 } } as const;
+const H = (lv: 1 | 2) => BR[lv].s + BR[lv].c;
+const C = H(1);
+const curve = (x0: number, x1: number, lv: 1 | 2) => {
+	const { s, c } = BR[lv];
+	const h = s + c;
+	return `M ${x0} ${h} C ${x0} ${s + c * 0.4}, ${x1} ${s + c * 0.6}, ${x1} ${s} L ${x1} 0`;
+};
 const last = rows.length - 1;
 
 type Seg = { x: number; part: 'full' | 'up' | 'down' | 'start'; cls: string };
@@ -130,15 +137,15 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 			const s = e.kind === 'milestone' ? 'mile' : g.level === 2 ? 'sub' : 'main';
 			const from = g.parent ? xOf(g.parent.lane) : xOf(0);
 			return (
-				<li class={`row ${s}`}>
+				<li class={`row ${s}`} style={first ? `min-height: calc(var(--dot-y) + ${H(g.level) + 7}px)` : undefined}>
 					<div class="when">{when(e)}</div>
 					<div class="graph" aria-hidden="true">
 						{segments(i).map((sg) => (
 							<span class={`line ${sg.part} ${sg.cls}`} style={`left:${sg.x - 1}px`} />
 						))}
 						{first && (
-							<svg class={`curve g-${g.key} lv${g.level}`} width={W} height={C} viewBox={`0 0 ${W} ${C}`}>
-								<path d={curve(from, xOf(g.lane))} />
+							<svg class={`curve g-${g.key} lv${g.level}`} width={W} height={H(g.level)} viewBox={`0 0 ${W} ${H(g.level)}`}>
+								<path d={curve(from, xOf(g.lane), g.level)} />
 							</svg>
 						)}
 						<span class="leader" style={`left:${xOf(g.lane) + 6}px`} />
