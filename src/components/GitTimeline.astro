@@ -105,8 +105,9 @@ const segments = (i: number): Seg[] => {
 		const cls = `g-${g.key} lv${g.level}`;
 		if (i === g.startRow) out.push({ x: xOf(g.lane), part: 'up', cls });
 		else if (i === g.topRow && !g.open && g.members.includes(rows[i])) out.push({ x: xOf(g.lane), part: 'down', cls });
-		else if (i === g.topRow && !g.open && rows[i].start === g.end) out.push({ x: xOf(g.lane), part: 'down', cls: `${cls} cap` });
-		else out.push({ x: xOf(g.lane), part: 'full', cls: `${cls} ${i === g.topRow && !g.open ? 'cap' : ''}` });
+		// a line that ends between events stops level with the last event before its end
+		else if (i === g.topRow && !g.open) out.push({ x: xOf(g.lane), part: 'down', cls: `${cls} cap` });
+		else out.push({ x: xOf(g.lane), part: 'full', cls });
 	}
 	return out;
 };
