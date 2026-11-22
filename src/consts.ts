@@ -3,7 +3,7 @@
 export const SITE_TITLE = 'Maharnab Bhattacharjee';
 export const SITE_TAGLINE = 'Experimental high-energy physics';
 export const SITE_DESCRIPTION =
-	'Physicist building data pipelines, calibration systems and anomaly detection for 38,400-channel particle detectors. C++, Python, ROOT, Geant4, GPU/HPC.';
+	'Experimental physicist working on calorimeter calibration, SiPM readout and data analysis for the MPD experiment at NICA.';
 
 export const AFFILIATION = 'Research Scientist, LHEP, JINR';
 

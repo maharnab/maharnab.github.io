@@ -14,7 +14,7 @@ const posts = (await getCollection('blog'))
 	.slice(0, 3);
 ---
 
-<Page title={`${SITE_TITLE} · Physicist, data & ML`} description={SITE_DESCRIPTION}>
+<Page title={SITE_TITLE} description={SITE_DESCRIPTION}>
 	<section class="panel hero">
 		<div class="hero-text">
 			<p class="eyebrow">{AFFILIATION}</p>
