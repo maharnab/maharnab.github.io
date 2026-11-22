@@ -93,8 +93,10 @@ const nLanes = Math.max(...all.map((g) => g.lane));
 const LANE_W = 22;
 const xOf = (lane: number) => LANE_W / 2 + LANE_W * lane;
 const W = LANE_W * (nLanes + 1);
-const C = 22;
-const curve = (x0: number, x1: number) => `M ${x0} ${C} C ${x0} ${C * 0.4}, ${x1} ${C * 0.6}, ${x1} 0`;
+const S = 15; // straight run into the dot (visible past the largest dot radius)
+const C = 22 + S; // total height of a branch: curve, then straight
+const curve = (x0: number, x1: number) =>
+	`M ${x0} ${C} C ${x0} ${S + (C - S) * 0.4}, ${x1} ${S + (C - S) * 0.6}, ${x1} ${S} L ${x1} 0`;
 const last = rows.length - 1;
 
 type Seg = { x: number; part: 'full' | 'up' | 'down' | 'start'; cls: string };
@@ -120,7 +122,7 @@ const when = (e: Entry) => e.startLabel ?? `${MON[Number(e.start.slice(5, 7)) - 
 const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 ---
 
-<ol class="tl" style={`--w:${W}px`}>
+<ol class="tl" style={`--w:${W}px; --c:${C}px`}>
 	{
 		rows.map((e, i) => {
 			const g = groupOf(e);
@@ -214,7 +216,7 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 	/* the time line starts where the oldest subline branches off */
 	.line.start {
 		bottom: auto;
-		height: calc(var(--dot-y) + 22px);
+		height: calc(var(--dot-y) + var(--c));
 	}
 	.line.cap::before {
 		content: '';
