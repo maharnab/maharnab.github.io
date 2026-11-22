@@ -1,5 +1,5 @@
 ---
-title: Live data-quality monitoring at GB/s rates
+title: Design of a live data-quality monitoring system
 summary: Design and prototype of a streaming monitoring system for 38,400 detector channels, covering the TCP receiver, a queueing layer, per-channel metrics and bulk database ingest, sized for 1,000 events/s (about 4.6 GB/s raw).
 period: '2026'
 org: LHEP, JINR · NICA-MPD ECAL

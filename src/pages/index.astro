@@ -19,12 +19,13 @@ const posts = (await getCollection('blog'))
 	<section class="panel hero">
 		<div class="hero-text">
 			<p class="eyebrow">{AFFILIATION}</p>
-			<h1>I turn raw detector signals into reliable data — at the scale of 38,400 channels.</h1>
+			<h1>Maharnab Bhattacharjee</h1>
+			<p class="subtitle">Experimental physicist · detector calibration, data analysis and scientific computing</p>
 			<p class="lede">
-				I'm Maharnab Bhattacharjee, an experimental physicist with a PhD in high-energy physics. I build the
-				pipelines, statistical calibrations and anomaly detection that take a particle detector from bare
-				hardware to certified, analysis-ready data: C++ and Python at production scale, GPU/HPC, and ML on
-				real sensor waveforms.
+				I work on the electromagnetic calorimeter of the MPD experiment at NICA, where I have been responsible
+				for calibrating and validating its SiPM readout: from LED tests of individual readout boards to
+				cosmic-muon equalisation of the assembled sectors. Most of my work is analysis software in C++ and
+				Python, with an increasing focus on statistical methods and machine learning for detector data.
 			</p>
 			<div class="pills">
 				<a class="btn primary" href="/projects">See projects</a>
@@ -57,7 +58,7 @@ const posts = (await getCollection('blog'))
 	</section>
 
 	<section class="panel">
-		<h2>What I bring</h2>
+		<h2>Areas of work</h2>
 		<div class="cards">
 			<article class="card">
 				<h3>Data & ML</h3>
@@ -68,8 +69,8 @@ const posts = (await getCollection('blog'))
 				<p>Streaming C++17 decoders, multi-GB/s data-rate design, SLURM batch processing, CUDA and GPU-accelerated workflows, PostgreSQL bulk ingest.</p>
 			</article>
 			<article class="card">
-				<h3>Research to production</h3>
-				<p>From simulation (Geant4) and hardware test stands to production pipelines that a collaboration depends on — documented, reproducible, versioned.</p>
+				<h3>Detector R&amp;D</h3>
+				<p>Geant4 simulation, hardware test stands and the analysis pipelines used in detector production, with an emphasis on documented and reproducible results.</p>
 			</article>
 		</div>
 	</section>
@@ -108,6 +109,11 @@ const posts = (await getCollection('blog'))
 </Page>
 
 <style>
+	.subtitle {
+		margin: 0 0 0.6rem;
+		font-size: 1.05rem;
+		color: var(--teal);
+	}
 	.hero {
 		display: grid;
 		grid-template-columns: 1fr auto;
