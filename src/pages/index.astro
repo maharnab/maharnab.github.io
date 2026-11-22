@@ -4,10 +4,11 @@ import Page from '../layouts/Page.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { AFFILIATION, LINKS, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import GitTimeline from '../components/GitTimeline.astro';
+import { newestFirst } from '../utils/projects';
 
 const featured = (await getCollection('projects'))
 	.filter((p) => p.data.featured)
-	.sort((a, b) => a.data.order - b.data.order);
+	.sort(newestFirst);
 
 const posts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
