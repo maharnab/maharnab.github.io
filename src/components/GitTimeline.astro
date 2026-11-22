@@ -412,5 +412,9 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 			grid-column: 2;
 			padding-top: 0;
 		}
+		/* stop short of the date: the column gap is narrower here */
+		.leader {
+			right: -0.35rem;
+		}
 	}
 </style>
