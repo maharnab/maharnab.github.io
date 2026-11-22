@@ -18,6 +18,7 @@ export type Entry = {
 	lane?: string;
 	endTitle?: string; // home page: adds an end event with this title at `end`
 	startLabel?: string; // home page: date shown for the start event (default 'Mon YYYY')
+	refs?: { label: string; href: string }[]; // About: independent pages that list this role
 };
 
 export const kindLabel: Record<Kind, string> = {
@@ -70,6 +71,10 @@ export const timeline: Entry[] = [
 		project: 'module-tests-and-beam',
 		kind: 'work',
 		lane: 'jinr',
+		refs: [
+			{ label: 'ICPPA 2020 talk', href: 'https://indico.particle.mephi.ru/event/35/contributions/2294/' },
+			{ label: 'MPD Collaboration Meeting 2023 talk', href: 'https://indico.jinr.ru/event/3551/contributions/19548/' },
+		],
 	},
 	{
 		start: '2022-01',
@@ -104,6 +109,10 @@ export const timeline: Entry[] = [
 		project: 'dune-nd-ecal-simulation',
 		kind: 'education',
 		lane: 'phd',
+		refs: [
+			{ label: 'Gauhati University thesis list', href: 'https://gauhati.ac.in/faculty/eeshankur-saikia-physical-science-division/' },
+			{ label: 'Prof. Bhuyan’s students', href: 'https://fac.iitg.ac.in/bhuyan/students.html' },
+		],
 	},
 	{
 		start: '2016-09',
@@ -172,6 +181,7 @@ export const timeline: Entry[] = [
 		short: 'Test-station software for Thirty Meter Telescope mirror actuators.',
 		text: 'My BS thesis project: test-station software for the Thirty Meter Telescope mirror actuators.',
 		project: 'tmt-actuator-test-software',
+		refs: [{ label: 'India-TMT people', href: 'https://tmt.iiap.res.in/people' }],
 		kind: 'project',
 	},
 	{

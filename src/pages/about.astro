@@ -56,6 +56,17 @@ import { skills, timelineNewestFirst as timeline } from '../data/timeline';
 							<p>
 								{t.text} {t.project && <a href={`/projects/${t.project}/`}>Project →</a>}
 							</p>
+							{t.refs && (
+								<p class="refs">
+									See also:{' '}
+									{t.refs.map((r, i) => (
+										<>
+											{i > 0 && ' · '}
+											<a href={r.href} target="_blank" rel="noreferrer">{r.label}</a>
+										</>
+									))}
+								</p>
+							)}
 						</div>
 					</li>
 				))
@@ -126,6 +137,11 @@ import { skills, timelineNewestFirst as timeline } from '../data/timeline';
 		font-size: 0.9rem;
 		color: var(--text-muted);
 		padding-top: 0.15rem;
+	}
+	.refs {
+		margin: 0.2rem 0 0;
+		font-size: 0.85rem;
+		color: var(--text-muted);
 	}
 	.org {
 		margin: 0.1rem 0 0.3rem;
