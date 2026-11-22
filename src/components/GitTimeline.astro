@@ -96,20 +96,15 @@ const W = LANE_W * (nLanes + 1);
 // A branch is a curve followed by a short straight run into the dot. Level-2 branches (small
 // dots) use a shorter one. Rows that start a branch are tall enough to hold it, so a branch
 // always leaves its parent line inside its own row, never at the parent's circle below.
-const BR = { 1: { s: 15, c: 22 }, 2: { s: 15, c: 16 } } as const;
+const BR = { 1: { s: 15, c: 22 }, 2: { s: 15, c: 18 } } as const;
 const H = (lv: 1 | 2) => BR[lv].s + BR[lv].c;
 const C = H(1);
 const curve = (x0: number, x1: number, lv: 1 | 2) => {
 	const { s, c } = BR[lv];
 	const h = s + c;
-	if (lv === 2) {
-		// Narrow lane gap: two rounded corners with a level middle, so the bend reads as clearly as level 1's.
-		const m = s + c / 2;
-		const r = Math.min(c / 2, (x1 - x0) / 2);
-		const k = r * 0.552;
-		return `M ${x0} ${h} L ${x0} ${m + r} C ${x0} ${m + r - k}, ${x0 + r - k} ${m}, ${x0 + r} ${m} L ${x1 - r} ${m} C ${x1 - r + k} ${m}, ${x1} ${m - r + k}, ${x1} ${m - r} L ${x1} 0`;
-	}
-	return `M ${x0} ${h} C ${x0} ${s + c * 0.4}, ${x1} ${s + c * 0.6}, ${x1} ${s} L ${x1} 0`;
+	// Level-2 lanes are narrow, so their curve uses softer control points to read as a smooth S.
+	const [a, b] = lv === 2 ? [0.5, 0.5] : [0.4, 0.6];
+	return `M ${x0} ${h} C ${x0} ${s + c * a}, ${x1} ${s + c * b}, ${x1} ${s} L ${x1} 0`;
 };
 const last = rows.length - 1;
 
