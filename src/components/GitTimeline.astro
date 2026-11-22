@@ -1,8 +1,6 @@
 ---
-// Git-graph style timeline.
-// The main line (lane 0) runs through the whole career and carries the degrees. Positions and
-// projects are branches: they fork off the main line when they start and merge back when they end.
-// Rows are entries, newest first; concurrent entries get separate lanes.
+// Vertical timeline, newest first. Main stages sit on one line; activities that ran in parallel
+// with a main stage (fully inside its dates) branch off to the side with a short curve and a dot.
 import { kindLabel, timeline, type Entry, type Kind } from '../data/timeline';
 
 const OPEN = '9999-12';
@@ -12,128 +10,59 @@ const rows = [...timeline].sort(
 	(a, b) => b.start.localeCompare(a.start) || endOf(b).localeCompare(endOf(a)),
 );
 
-// Degrees sit on the main line (lane 0); everything else is a branch in lanes 1..n.
-const isMain = (e: Entry) => e.kind === 'education';
-
-// Branch lanes: greedy, oldest first.
-const laneOf = new Map<Entry, number>();
-const laneEnd: string[] = [];
-[...timeline]
-	.filter((e) => !isMain(e))
-	.sort((a, b) => a.start.localeCompare(b.start))
-	.forEach((e) => {
-		let i = laneEnd.findIndex((end) => end < e.start);
-		if (i === -1) i = laneEnd.length;
-		laneEnd[i] = endOf(e);
-		laneOf.set(e, i + 1);
-	});
-timeline.filter(isMain).forEach((e) => laneOf.set(e, 0));
-const nLanes = laneEnd.length + 1;
-
-// Row span: from the entry's start row up to the newest row it still covers.
-const rowSpan = (e: Entry, startRow: number) => {
-	if (!e.end) return 0;
-	for (let j = 0; j <= startRow; j++) if (rows[j].start <= endOf(e)) return j;
-	return startRow;
-};
-const spans = rows
-	.map((e, startRow) => ({ e, lane: laneOf.get(e)!, startRow, endRow: rowSpan(e, startRow), open: !e.end }))
-	.filter((s) => !isMain(s.e));
-
-// Main-line colouring: a degree covers the line from its dot up to where it ended.
-// If the next degree started within 6 months, the line stays coloured up to the next degree's dot.
+// A side branch is a non-degree activity that started during a degree and finished by the
+// end of it (2 months' tolerance). Everything else is on the main line.
 const months = (ym: string) => Number(ym.slice(0, 4)) * 12 + Number(ym.slice(5, 7));
-const degrees = rows
-	.map((e, startRow) => ({ e, startRow, endRow: rowSpan(e, startRow) }))
-	.filter((d) => isMain(d.e))
-	.sort((a, b) => a.e.start.localeCompare(b.e.start));
-degrees.forEach((d, i) => {
-	const next = degrees[i + 1];
-	if (next && months(next.e.start) - months(endOf(d.e)) <= 6) d.endRow = next.startRow;
-});
-// top half of row j = above its dot; bottom half = below its dot
-const mainTop = (j: number) => degrees.some((d) => d.endRow < j && j <= d.startRow);
-const mainBottom = (j: number) => degrees.some((d) => d.endRow <= j && j < d.startRow);
+const degrees = timeline.filter((e) => e.kind === 'education');
+const isBranch = (e: Entry) =>
+	e.kind !== 'education' &&
+	!!e.end &&
+	degrees.some(
+		(d) => d.start <= e.start && e.start <= endOf(d) && months(e.end!) <= months(endOf(d)) + 2,
+	);
 
-// Geometry (px).
-const LANE_W = 22;
+const LANE_W = 26;
 const DOT_Y = 20; // dot centre from the top of a row
-const C = 16; // vertical extent of a fork / merge curve
-const x = (lane: number) => lane * LANE_W + LANE_W / 2;
-const W = nLanes * LANE_W;
+const C = 18; // height of the branch curve
+const x0 = LANE_W / 2;
+const x1 = LANE_W + LANE_W / 2;
+const W = 2 * LANE_W;
+const branchPath = `M ${x0} ${C} C ${x0} ${C * 0.45}, ${x1} ${C * 0.55}, ${x1} 0`;
 const last = rows.length - 1;
-
-type Piece =
-	| { t: 'seg'; lane: number; kind: Kind | 'main'; part: 'full' | 'up' | 'down' | 'below' }
-	| { t: 'fork' | 'merge'; lane: number; kind: Kind };
-
-const piecesForRow = (j: number): Piece[] => {
-	const out: Piece[] = [
-		{ t: 'seg', lane: 0, kind: mainTop(j) ? 'education' : 'main', part: 'up' },
-	];
-	if (j !== last) out.push({ t: 'seg', lane: 0, kind: mainBottom(j) ? 'education' : 'main', part: 'below' });
-	for (const s of spans) {
-		if (j < s.endRow || j > s.startRow) continue;
-		const k = s.e.kind;
-		if (j === s.startRow) {
-			out.push({ t: 'fork', lane: s.lane, kind: k });
-			if (s.open || s.endRow < s.startRow) out.push({ t: 'seg', lane: s.lane, kind: k, part: 'up' });
-			if (!s.open && s.endRow === s.startRow) out.push({ t: 'merge', lane: s.lane, kind: k });
-		} else if (j === s.endRow && !s.open) {
-			out.push({ t: 'seg', lane: s.lane, kind: k, part: 'down' });
-			out.push({ t: 'merge', lane: s.lane, kind: k });
-		} else {
-			out.push({ t: 'seg', lane: s.lane, kind: k, part: 'full' });
-		}
-	}
-	return out;
-};
-
-// Fork: from main line just below the dot, curving up into the branch lane at the dot.
-const forkPath = (lane: number) =>
-	`M ${x(0)} ${C} C ${x(0)} ${C / 2}, ${x(lane)} ${C / 2}, ${x(lane)} 0`;
-// Merge: from the branch lane at the dot, curving up into the main line.
-const mergePath = (lane: number) =>
-	`M ${x(lane)} ${C} C ${x(lane)} ${C / 2}, ${x(0)} ${C / 2}, ${x(0)} 0`;
 ---
 
-<ol class="gitgraph" style={`--w:${W}px; --lane-w:${LANE_W}px; --dot-y:${DOT_Y}px; --c:${C}px`}>
+<ol class="tl" style={`--w:${W}px; --dot-y:${DOT_Y}px; --c:${C}px`}>
 	{
-		rows.map((e, j) => (
-			<li>
-				<div class="when">{e.period}</div>
-				<div class="graph" aria-hidden="true">
-					{piecesForRow(j).map((p) =>
-						p.t === 'seg' ? (
-							<span class={`seg ${p.part} k-${p.kind}`} style={`left:${x(p.lane) - 1.5}px`} />
-						) : (
-							<svg
-								class={`curve ${p.t} s-${p.kind}`}
-								width={W}
-								height={C}
-								viewBox={`0 0 ${W} ${C}`}
-							>
-								<path d={p.t === 'fork' ? forkPath(p.lane) : mergePath(p.lane)} />
+		rows.map((e, j) => {
+			const branch = isBranch(e);
+			return (
+				<li class={branch ? 'branch' : 'main'}>
+					<div class="when">{e.period}</div>
+					<div class="graph" aria-hidden="true">
+						<span class={`spine ${j === 0 ? 'first' : ''} ${j === last ? 'last' : ''}`} style={`left:${x0 - 1}px`} />
+						{branch && (
+							<svg class="curve" width={W} height={C} viewBox={`0 0 ${W} ${C}`}>
+								<path d={branchPath} />
 							</svg>
-						),
-					)}
-					<span class={`dot k-${e.kind}`} style={`left:${x(laneOf.get(e)!) - 7}px`} />
-				</div>
-				<div class="what">
-					<span class="title">{e.title}</span>
-					<span class="org">{e.org}</span>
-					<p>
-						{e.short}
-						{e.project && (
-							<>
-								{' '}
-								<a href={`/projects/${e.project}/`}>Details</a>
-							</>
 						)}
-					</p>
-				</div>
-			</li>
-		))
+						<span class={`dot k-${e.kind}`} style={`left:${(branch ? x1 : x0) - 7}px`} />
+					</div>
+					<div class="what">
+						<span class="title">{e.title}</span>
+						<span class="org">{e.org}</span>
+						<p>
+							{e.short}
+							{e.project && (
+								<>
+									{' '}
+									<a href={`/projects/${e.project}/`}>Details</a>
+								</>
+							)}
+						</p>
+					</div>
+				</li>
+			);
+		})
 	}
 </ol>
 <p class="legend">
@@ -142,16 +71,15 @@ const mergePath = (lane: number) =>
 </p>
 
 <style>
-	.gitgraph {
+	.tl {
 		list-style: none;
 		margin: 0.4rem 0 0;
 		padding: 0;
 	}
-	.gitgraph li {
+	.tl li {
 		display: grid;
 		grid-template-columns: 118px var(--w) minmax(0, 1fr);
-		column-gap: 0.9rem;
-		min-height: calc(var(--dot-y) + var(--c) + 12px);
+		column-gap: 0.8rem;
 	}
 	.when,
 	.what {
@@ -167,44 +95,29 @@ const mergePath = (lane: number) =>
 	.graph {
 		position: relative;
 	}
-	.seg {
+	.spine {
 		position: absolute;
-		width: 3px;
-		border-radius: 2px;
-	}
-	.seg.full {
 		top: 0;
 		bottom: 0;
+		width: 2px;
+		background: var(--line-strong);
 	}
-	.seg.up {
-		top: 0;
-		height: var(--dot-y);
-	}
-	.seg.down {
-		top: calc(var(--dot-y) + var(--c));
-		bottom: 0;
-	}
-	.seg.below {
+	.spine.first {
 		top: var(--dot-y);
-		bottom: 0;
+	}
+	.spine.last {
+		bottom: auto;
+		height: var(--dot-y);
 	}
 	.curve {
 		position: absolute;
 		left: 0;
+		top: var(--dot-y);
 		overflow: visible;
 		fill: none;
-		stroke-width: 3;
+		stroke: var(--line-strong);
+		stroke-width: 2;
 		stroke-linecap: round;
-	}
-	.curve.fork {
-		top: var(--dot-y);
-	}
-	.curve.merge {
-		top: calc(var(--dot-y) - var(--c));
-	}
-	/* a branch that ends in a later row merges from the bottom of its line */
-	.seg.down + .curve.merge {
-		top: var(--dot-y);
 	}
 	.dot {
 		position: absolute;
@@ -216,8 +129,8 @@ const mergePath = (lane: number) =>
 		box-shadow: 0 0 0 1px var(--line-strong);
 		z-index: 1;
 	}
-	.k-main {
-		background: var(--line-strong);
+	.branch .dot {
+		transform: scale(0.85);
 	}
 	.k-work {
 		background: var(--teal);
@@ -228,19 +141,13 @@ const mergePath = (lane: number) =>
 	.k-project {
 		background: var(--text-muted);
 	}
-	.s-work {
-		stroke: var(--teal);
-	}
-	.s-education {
-		stroke: var(--accent);
-	}
-	.s-project {
-		stroke: var(--text-muted);
-	}
 	.title {
 		font-weight: 600;
 		color: var(--text-strong);
 		margin-right: 0.5rem;
+	}
+	.branch .title {
+		font-weight: 500;
 	}
 	.org {
 		font-size: 0.9rem;
@@ -263,6 +170,9 @@ const mergePath = (lane: number) =>
 		font-size: 0.85rem;
 		color: var(--text-muted);
 	}
+	.legend .k {
+		background: none;
+	}
 	.legend .k::before {
 		content: '';
 		display: inline-block;
@@ -281,14 +191,11 @@ const mergePath = (lane: number) =>
 	.legend .k-project::before {
 		background: var(--text-muted);
 	}
-	.legend .k {
-		background: none;
-	}
 	.legend :global(a) {
 		margin-left: auto;
 	}
 	@media (max-width: 640px) {
-		.gitgraph li {
+		.tl li {
 			grid-template-columns: var(--w) minmax(0, 1fr);
 		}
 		.when {
