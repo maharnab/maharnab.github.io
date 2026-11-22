@@ -56,7 +56,7 @@ export const timeline: Entry[] = [
 	{
 		start: '2016-09',
 		end: '2025-10',
-		period: '2016 – 2025',
+		period: 'Sep 2016 – Oct 2025',
 		title: 'PhD, Physical Science (Experimental HEP)',
 		org: 'Gauhati University · research at IIT Guwahati and JINR',
 		short: 'Electromagnetic shower simulation and reconstruction; SiPM readout electronics.',
@@ -100,7 +100,7 @@ export const timeline: Entry[] = [
 	{
 		start: '2014-08',
 		end: '2016-05',
-		period: '2014 – 2016',
+		period: 'Aug 2014 – May 2016',
 		title: 'MS, Physical Science',
 		org: 'Gauhati University',
 		short: 'Master’s degree in physical science.',
@@ -142,7 +142,7 @@ export const timeline: Entry[] = [
 	{
 		start: '2009-08',
 		end: '2013-05',
-		period: '2009 – 2013',
+		period: 'Aug 2009 – May 2013',
 		title: 'BS, Physical Science',
 		org: 'Gauhati University',
 		short: 'Bachelor’s degree in physical science.',
