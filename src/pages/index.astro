@@ -12,6 +12,45 @@ const featured = (await getCollection('projects'))
 const posts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
+const areas = [
+	{
+		title: 'Statistical data analysis',
+		text: 'Fitting and modelling large sets of detector measurements: per-channel response fits, model selection, robust regression and uncertainty estimates across tens of thousands of channels.',
+		tools: ['ROOT / RooFit', 'NumPy / SciPy', 'pandas'],
+		related: [
+			{ slug: 'sipm-board-calibration', label: 'board calibration' },
+			{ slug: 'sector-equalisation', label: 'sector equalisation' },
+		],
+	},
+	{
+		title: 'Machine learning',
+		text: 'Anomaly detection on sensor waveforms with rule-based labels, clustering and PCA for shower reconstruction, and gradient-boosted regression for track seeding.',
+		tools: ['scikit-learn', 'XGBoost', 'PyTorch'],
+		related: [
+			{ slug: 'waveform-anomaly-detection', label: 'waveform anomalies' },
+			{ slug: 'dune-nd-ecal-simulation', label: 'shower reconstruction' },
+		],
+	},
+	{
+		title: 'Scientific computing',
+		text: 'Streaming decoders and analysis pipelines for raw DAQ data in C++17 and Python, batch processing on SLURM clusters, GPU workflows, and databases for detector conditions and monitoring.',
+		tools: ['C++17', 'Python', 'CUDA', 'SLURM', 'PostgreSQL'],
+		related: [
+			{ slug: 'mpd-ecal-data-analysis', label: 'MPD data analysis' },
+			{ slug: 'live-monitoring-pipeline', label: 'monitoring design' },
+		],
+	},
+	{
+		title: 'Instrumentation and simulation',
+		text: 'SiPM readout and test stands, calorimeter calibration with LEDs, cosmic muons and particle beams, and Geant4 simulation of detector response.',
+		tools: ['SiPM readout', 'Geant4', 'Qt / embedded C'],
+		related: [
+			{ slug: 'module-tests-and-beam', label: 'module tests' },
+			{ slug: 'dune-nd-ecal-simulation', label: 'Geant4 study' },
+			{ slug: 'tmt-actuator-test-software', label: 'TMT test station' },
+		],
+	},
+];
 ---
 
 <Page title={SITE_TITLE} description={SITE_DESCRIPTION}>
@@ -51,19 +90,29 @@ const posts = (await getCollection('blog'))
 
 	<section class="panel">
 		<h2>Areas of work</h2>
-		<div class="cards">
-			<article class="card">
-				<h3>Data & ML</h3>
-				<p>Statistical modelling and fitting on millions of measurements, anomaly detection on sensor waveforms, feature engineering, scikit-learn / PyTorch / XGBoost.</p>
-			</article>
-			<article class="card">
-				<h3>HPC & performance</h3>
-				<p>Streaming C++17 decoders, multi-GB/s data-rate design, SLURM batch processing, CUDA and GPU-accelerated workflows, PostgreSQL bulk ingest.</p>
-			</article>
-			<article class="card">
-				<h3>Detector R&amp;D</h3>
-				<p>Geant4 simulation, hardware test stands and the analysis pipelines used in detector production, with an emphasis on documented and reproducible results.</p>
-			</article>
+		<div class="grid-2 areas">
+			{
+				areas.map((a) => (
+					<article class="card">
+						<h3>{a.title}</h3>
+						<p>{a.text}</p>
+						<ul class="tags">
+							{a.tools.map((t) => (
+								<li>{t}</li>
+							))}
+						</ul>
+						<p class="related">
+							Related:{' '}
+							{a.related.map((r, i) => (
+								<>
+									{i > 0 && ' · '}
+									<a href={`/projects/${r.slug}/`}>{r.label}</a>
+								</>
+							))}
+						</p>
+					</article>
+				))
+			}
 		</div>
 	</section>
 
@@ -101,6 +150,19 @@ const posts = (await getCollection('blog'))
 </Page>
 
 <style>
+	.areas .card {
+		display: flex;
+		flex-direction: column;
+	}
+	.areas .card p {
+		margin: 0.3rem 0 0.4rem;
+	}
+	.areas .related {
+		margin-top: auto !important;
+		padding-top: 0.5rem;
+		font-size: 0.85rem;
+		color: var(--text-muted);
+	}
 	.subtitle {
 		margin: 0 0 0.6rem;
 		font-size: 1.05rem;
