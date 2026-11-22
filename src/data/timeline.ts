@@ -14,7 +14,7 @@ export const timeline: Entry[] = [
 		period: '2019 – present',
 		title: 'Research Scientist (Junior Research Scientist until May 2026)',
 		org: 'LHEP, JINR · NICA-MPD electromagnetic calorimeter',
-		text: 'Calibration and certification of the full calorimeter: 2,400 SiPM readout boards, 2,400 modules and 50 half-sectors (38,400 channels). Built the C++/Python pipelines for LED gain calibration, cosmic-muon equalisation, waveform quality control and live-monitoring prototypes.',
+		text: 'Construction-stage calibration and QA of the calorimeter: LED calibration of 2,400 SiPM readout boards, cosmic-muon tests of the modules before assembly, and cosmic-ray testing of all 50 half-sectors before installation. Now analysing cosmic and beam (collision) data recorded with the calorimeter inside MPD. Built the C++/Python pipelines for calibration, equalisation, waveform quality control and live-monitoring prototypes.',
 		project: 'sipm-board-calibration',
 		kind: 'work',
 	},
