@@ -16,6 +16,7 @@ const posts = (await getCollection('blog'))
 
 <Page title={SITE_TITLE} description={SITE_DESCRIPTION}>
 	<section class="panel hero">
+		<img class="headshot" src="/images/work/headshot.jpg" alt="Portrait of Maharnab Bhattacharjee" width="230" height="230" />
 		<div class="hero-text">
 			<p class="eyebrow">{AFFILIATION}</p>
 			<h1>Maharnab Bhattacharjee</h1>
@@ -36,7 +37,6 @@ const posts = (await getCollection('blog'))
 				<a class="btn" href={LINKS.github} target="_blank" rel="noreferrer">GitHub</a>
 			</div>
 		</div>
-		<img class="headshot" src="/images/work/headshot.jpg" alt="Portrait of Maharnab Bhattacharjee" width="220" height="228" />
 	</section>
 
 
@@ -106,29 +106,39 @@ const posts = (await getCollection('blog'))
 		font-size: 1.05rem;
 		color: var(--teal);
 	}
-	.hero {
-		display: grid;
-		grid-template-columns: 1fr auto;
-		gap: 1.5rem;
-		align-items: center;
+	.hero::after {
+		content: '';
+		display: block;
+		clear: both;
 	}
 	.headshot {
-		width: 220px;
-		height: auto;
+		float: right;
+		width: 230px;
+		height: 230px;
+		margin: 0.4rem 0 0.6rem 1.6rem;
 		border-radius: 50%;
-		aspect-ratio: 1 / 1;
 		object-fit: cover;
 		object-position: center 30%;
 		border: 4px solid var(--surface-2);
 		box-shadow: var(--shadow);
+		shape-outside: circle(50%);
+		shape-margin: 1rem;
 	}
-	@media (max-width: 760px) {
-		.hero {
-			grid-template-columns: 1fr;
-		}
+	.hero .lede {
+		max-width: none;
+		text-align: justify;
+		hyphens: auto;
+	}
+	@media (max-width: 640px) {
 		.headshot {
-			order: -1;
-			width: 140px;
+			float: none;
+			display: block;
+			width: 150px;
+			height: 150px;
+			margin: 0 auto 1rem;
+		}
+		.hero .lede {
+			text-align: left;
 		}
 	}
 </style>
