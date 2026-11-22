@@ -1,7 +1,7 @@
 // Global site data. Edit here; every page reads from this file.
 
 export const SITE_TITLE = 'Maharnab Bhattacharjee';
-export const SITE_TAGLINE = 'Physicist · Data & ML · Scientific computing';
+export const SITE_TAGLINE = 'Experimental high-energy physics';
 export const SITE_DESCRIPTION =
 	'Physicist building data pipelines, calibration systems and anomaly detection for 38,400-channel particle detectors. C++, Python, ROOT, Geant4, GPU/HPC.';
 
