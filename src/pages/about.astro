@@ -1,53 +1,134 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_TITLE } from '../consts';
+import Page from '../layouts/Page.astro';
+import { LINKS, SITE_TITLE } from '../consts';
+import { skills, timeline } from '../data/timeline';
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead
-			title={`About | ${SITE_TITLE}`}
-			description="Biography, research directions, and contact profiles for Maharnab Bhattacharjee."
-		/>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section class="panel">
-				<h1>About</h1>
-				<p class="lede">
-					I am an experimental physicist focused on detector development for high-energy physics, with work
-					centered on electromagnetic calorimetry, readout electronics, and calibration workflows.
-				</p>
-				<p>
-					My recent research has been tied to the NICA-MPD ECAL program at JINR Dubna and to broader efforts
-					linked with DUNE-oriented detector and electronics studies. I enjoy the full cycle of hardware
-					integration, data acquisition, and software analysis for performance validation.
-				</p>
-			</section>
+<Page
+	title={`About | ${SITE_TITLE}`}
+	description="Background, experience, education and skills of Maharnab Bhattacharjee."
+>
+	<section class="panel about">
+		<img src="/images/work/headshot.jpg" alt="Portrait of Maharnab Bhattacharjee" width="180" height="187" />
+		<div>
+			<h1>About</h1>
+			<p class="lede">
+				I'm an experimental physicist who has spent twelve years between hardware and data: test-station
+				software for the Thirty Meter Telescope, SiPM front-end electronics, Geant4 detector simulation for DUNE,
+				and since 2019 the calibration of the NICA-MPD electromagnetic calorimeter at JINR.
+			</p>
+			<p>
+				The common thread is turning noisy, high-volume sensor data into numbers people can trust. On the MPD
+				calorimeter that meant designing and running the pipelines that characterised every one of its 2,400
+				SiPM readout boards and 50 sectors: decoding raw binary DAQ streams, fitting tens of thousands of
+				distributions, finding the broken channels and the systematic effects nobody had noticed, and handing
+				the collaboration certified constants.
+			</p>
+			<p>
+				I'm now looking for roles in <strong>data science, machine learning, quantitative research, HPC/GPU
+				computing</strong> or <strong>research science</strong>, where that combination of rigorous statistics,
+				performance-minded engineering and ownership of messy real-world data is useful.
+			</p>
+		</div>
+	</section>
 
-			<section class="panel">
-				<h2>Research Themes</h2>
-				<ul class="flat-list">
-					<li><strong>Detector systems:</strong> calibration and deployment workflows for calorimeter modules.</li>
-					<li><strong>Electronics and DAQ:</strong> SiPM readout development and testbench-driven instrumentation.</li>
-					<li><strong>Analysis and simulation:</strong> reconstruction studies and software support for detector performance.</li>
-				</ul>
-			</section>
+	<section class="panel">
+		<h2>Experience & education</h2>
+		<ol class="timeline">
+			{
+				timeline.map((t) => (
+					<li class={t.kind}>
+						<div class="when">{t.period}</div>
+						<div>
+							<h3>{t.title}</h3>
+							<p class="org">{t.org}</p>
+							<p>
+								{t.text} {t.project && <a href={`/projects/${t.project}/`}>Project →</a>}
+							</p>
+						</div>
+					</li>
+				))
+			}
+		</ol>
+	</section>
 
-			<section class="panel">
-				<h2>Profiles</h2>
-				<div class="pills">
-					<a href="https://github.com/maharnab" target="_blank" rel="noreferrer">GitHub</a>
-					<a href="https://www.linkedin.com/in/maharnabb" target="_blank" rel="noreferrer">LinkedIn</a>
-					<a href="https://orcid.org/0000-0002-8700-4930" target="_blank" rel="noreferrer">ORCID</a>
-					<a href="mailto:maharnabb@gmail.com">maharnabb@gmail.com</a>
-				</div>
-			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+	<section class="panel">
+		<h2>Skills</h2>
+		<div class="grid-2">
+			{
+				skills.map((s) => (
+					<div>
+						<h3>{s.group}</h3>
+						<ul class="tags">
+							{s.items.map((i) => (
+								<li>{i}</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+		</div>
+	</section>
+
+	<section class="panel">
+		<h2>Contact</h2>
+		<div class="pills">
+			<a href={`mailto:${LINKS.email}`}>{LINKS.email}</a>
+			<a href={`mailto:${LINKS.emailWork}`}>{LINKS.emailWork}</a>
+			<a href={LINKS.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+			<a href={LINKS.github} target="_blank" rel="noreferrer">GitHub</a>
+			<a href={LINKS.orcid} target="_blank" rel="noreferrer">ORCID</a>
+			<a href={LINKS.inspire} target="_blank" rel="noreferrer">INSPIRE-HEP</a>
+		</div>
+	</section>
+</Page>
+
+<style>
+	.about {
+		display: grid;
+		grid-template-columns: 180px 1fr;
+		gap: 1.5rem;
+		align-items: start;
+	}
+	.about img {
+		border-radius: 14px;
+		width: 180px;
+	}
+	.timeline {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.timeline li {
+		display: grid;
+		grid-template-columns: 150px 1fr;
+		gap: 1rem;
+		padding: 0.9rem 0;
+		border-bottom: 1px dashed var(--line-soft);
+	}
+	.timeline li:last-child {
+		border-bottom: 0;
+	}
+	.timeline h3 {
+		margin: 0;
+	}
+	.when {
+		font-size: 0.9rem;
+		color: var(--text-muted);
+		padding-top: 0.15rem;
+	}
+	.org {
+		margin: 0.1rem 0 0.3rem;
+		color: var(--teal);
+		font-size: 0.92rem;
+	}
+	@media (max-width: 640px) {
+		.about,
+		.timeline li {
+			grid-template-columns: 1fr;
+		}
+		.timeline li {
+			gap: 0.2rem;
+		}
+	}
+</style>

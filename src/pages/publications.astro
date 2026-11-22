@@ -1,0 +1,128 @@
+---
+import Page from '../layouts/Page.astro';
+import { LINKS, SITE_TITLE } from '../consts';
+import {
+	DUNE_PAPER_COUNT,
+	TOTAL_PAPER_COUNT,
+	duneSelected,
+	ecalPapers,
+	mpdCollaborationPapers,
+	talks,
+	thesis,
+	type Pub,
+} from '../data/publications';
+
+const bold = (a: string) => a.replace(/(M\. Bhattacharjee)/, '<strong>$1</strong>');
+---
+
+<Page
+	title={`Publications | ${SITE_TITLE}`}
+	description="Papers, thesis and talks on calorimeter calibration, SiPM readout and neutrino physics."
+>
+	<section class="panel">
+		<h1>Publications</h1>
+		<p class="lede">
+			{TOTAL_PAPER_COUNT} records on INSPIRE-HEP: {ecalPapers.length} detector papers on the NICA-MPD calorimeter
+			(2 as first author) and {DUNE_PAPER_COUNT} as a member of the DUNE collaboration.
+		</p>
+		<div class="pills">
+			<a href={LINKS.inspire} target="_blank" rel="noreferrer">INSPIRE-HEP profile</a>
+			<a href={LINKS.orcid} target="_blank" rel="noreferrer">ORCID</a>
+			<a href={LINKS.scopus} target="_blank" rel="noreferrer">Scopus</a>
+		</div>
+	</section>
+
+	<section class="panel">
+		<h2>Calorimeter calibration & detector papers</h2>
+		<ol class="pubs">
+			{ecalPapers.map((p: Pub) => (
+				<li>
+					<span class="title">{p.title}</span>
+					{p.firstAuthor && <span class="first">first author</span>}
+					<br />
+					<span class="authors" set:html={bold(p.authors)} />
+					<br />
+					<span class="venue">{p.venue} ({p.year})</span>
+					{p.doi && <a href={`https://doi.org/${p.doi}`} target="_blank" rel="noreferrer">DOI</a>}
+					{p.arxiv && <a href={`https://arxiv.org/abs/${p.arxiv}`} target="_blank" rel="noreferrer">arXiv</a>}
+				</li>
+			))}
+		</ol>
+	</section>
+
+	<section class="panel">
+		<h2>PhD thesis</h2>
+		<p>
+			<span class="title">{thesis.title}</span><br />
+			<span class="venue">{thesis.institution}, {thesis.year}</span>
+		</p>
+		{thesis.href ? <a href={thesis.href}>Full text</a> : <div class="todo">Add the Shodhganga / university repository link (not found online yet).</div>}
+	</section>
+
+	<section class="panel">
+		<h2>Selected collaboration papers</h2>
+		<p class="muted">
+			Large-collaboration papers list all members alphabetically. Selected for relevance to machine learning, GPU
+			computing and detector design. Full list on INSPIRE.
+		</p>
+		<ol class="pubs">
+			{[...duneSelected, ...mpdCollaborationPapers].map((p: Pub) => (
+				<li>
+					<span class="title">{p.title}</span>
+					{p.note && <span class="first">{p.note}</span>}
+					<br />
+					<span class="authors">{p.authors}</span> · <span class="venue">{p.venue} ({p.year})</span>
+					{p.doi && <a href={`https://doi.org/${p.doi}`} target="_blank" rel="noreferrer">DOI</a>}
+					{p.arxiv && <a href={`https://arxiv.org/abs/${p.arxiv}`} target="_blank" rel="noreferrer">arXiv</a>}
+				</li>
+			))}
+		</ol>
+	</section>
+
+	<section class="panel">
+		<h2>Talks</h2>
+		<ul class="flat-list">
+			{talks.map((t) => (
+				<li>
+					<span class="muted">{t.date}</span> · <strong>{t.title}</strong> — {t.event}
+				</li>
+			))}
+		</ul>
+	</section>
+</Page>
+
+<style>
+	.pubs {
+		padding-left: 1.3rem;
+		margin: 0;
+	}
+	.pubs li {
+		padding: 0.6rem 0;
+		border-bottom: 1px dashed var(--line-soft);
+	}
+	.pubs li:last-child {
+		border-bottom: 0;
+	}
+	.title {
+		font-weight: 600;
+		color: var(--text-strong);
+	}
+	.authors,
+	.venue {
+		font-size: 0.9rem;
+		color: var(--text-muted);
+	}
+	.pubs a {
+		font-size: 0.88rem;
+		margin-left: 0.5rem;
+	}
+	.first {
+		font-size: 0.72rem;
+		margin-left: 0.4rem;
+		padding: 0.05rem 0.45rem;
+		border-radius: 999px;
+		border: 1px solid color-mix(in oklab, var(--teal) 40%, var(--line-soft));
+		color: var(--teal);
+		vertical-align: middle;
+	}
+</style>

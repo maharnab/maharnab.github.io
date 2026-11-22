@@ -1,0 +1,11 @@
+---
+import Page from '../layouts/Page.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<Page title={`Not found | ${SITE_TITLE}`} description="Page not found.">
+	<section class="panel">
+		<h1>Page not found</h1>
+		<p>That page doesn't exist (any more). Try the <a href="/">home page</a>, the <a href="/projects">projects</a> or the <a href="/publications">publications</a>.</p>
+	</section>
+</Page>

@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { SITE_TITLE } from '../../consts';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Page
+	title={`Projects | ${SITE_TITLE}`}
+	description="Case studies: detector calibration at scale, anomaly detection, data pipelines, simulation and instrumentation."
+>
+	<section class="panel">
+		<h1>Projects</h1>
+		<p class="lede">
+			Most of this work was done inside scientific collaborations, so the code is not public. Each case study
+			describes the problem, what I built, the scale and the result, using published or approved figures. Code
+			is available to discuss on request.
+		</p>
+		<div class="cards">
+			{projects.map((p) => <ProjectCard project={p} />)}
+		</div>
+	</section>
+</Page>

@@ -1,22 +1,26 @@
 ---
+import { LINKS, SITE_TITLE } from '../consts';
 const today = new Date();
 ---
 
 <footer>
-	<p class="main">&copy; {today.getFullYear()} Maharnab Bhattacharjee</p>
-	<p>
-		<a href="mailto:maharnabb@gmail.com">Email</a>
-		<a href="https://github.com/maharnab" target="_blank" rel="noreferrer">GitHub</a>
-		<a href="https://www.linkedin.com/in/maharnabb" target="_blank" rel="noreferrer">LinkedIn</a>
-		<a href="https://orcid.org/0000-0002-8700-4930" target="_blank" rel="noreferrer">ORCID</a>
+	<p class="links">
+		<a href={`mailto:${LINKS.email}`}>{LINKS.email}</a>
+		<a href={`mailto:${LINKS.emailWork}`}>{LINKS.emailWork}</a>
 	</p>
-	<p class="tagline">Built with Astro. Research notes and portfolio updates ongoing.</p>
+	<p class="links">
+		<a href={LINKS.github} target="_blank" rel="noreferrer">GitHub</a>
+		<a href={LINKS.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+		<a href={LINKS.orcid} target="_blank" rel="noreferrer">ORCID</a>
+		<a href={LINKS.inspire} target="_blank" rel="noreferrer">INSPIRE-HEP</a>
+	</p>
+	<p class="main">&copy; {today.getFullYear()} {SITE_TITLE}</p>
 </footer>
 <style>
 	footer {
 		max-width: 1080px;
 		margin: 0 auto;
-		padding: 1.5rem 1rem 2.5rem;
+		padding: 2rem 1rem 2.5rem;
 		color: var(--text-muted);
 		text-align: center;
 		font-size: 0.92rem;
@@ -24,18 +28,17 @@ const today = new Date();
 	p {
 		margin: 0.3rem 0;
 	}
-	.main {
-		color: var(--text-normal);
+	.links {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.3rem 1rem;
 	}
 	a {
 		color: var(--accent-strong);
 		text-decoration: none;
-		margin: 0 0.4rem;
 	}
 	a:hover {
 		text-decoration: underline;
-	}
-	.tagline {
-		font-size: 0.85rem;
 	}
 </style>

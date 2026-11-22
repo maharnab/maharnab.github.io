@@ -1,0 +1,79 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import { SITE_TITLE } from '../../consts';
+
+export async function getStaticPaths() {
+	const projects = await getCollection('projects');
+	return projects.map((p) => ({ params: { slug: p.id }, props: p }));
+}
+type Props = CollectionEntry<'projects'>;
+
+const project = Astro.props;
+const d = project.data;
+const { Content } = await render(project);
+
+const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const i = all.findIndex((p) => p.id === project.id);
+const prev = all[i - 1];
+const next = all[i + 1];
+---
+
+<Page title={`${d.title} | ${SITE_TITLE}`} description={d.summary} image={d.cover}>
+	<article class="panel">
+		<div class="prose">
+			<p class="eyebrow">
+				{d.period} · {d.org}
+				{d.needsInput && <span class="badge-todo">draft · needs your input</span>}
+			</p>
+			<h1>{d.title}</h1>
+			<p class="lede">{d.summary}</p>
+			{d.role && <p class="muted"><strong>My role:</strong> {d.role}</p>}
+			{
+				d.metrics.length > 0 && (
+					<div class="metrics">
+						{d.metrics.map((m) => (
+							<div class="metric">
+								<div class="value">{m.value}</div>
+								<div class="label">{m.label}</div>
+							</div>
+						))}
+					</div>
+				)
+			}
+			<ul class="tags">
+				{d.skills.map((s) => <li>{s}</li>)}
+			</ul>
+			{
+				d.links.length > 0 && (
+					<div class="pills">
+						{d.links.map((l) => (
+							<a href={l.href} target="_blank" rel="noreferrer">
+								{l.label}
+							</a>
+						))}
+					</div>
+				)
+			}
+			<hr />
+			<Content />
+			<hr />
+			<nav class="pager" aria-label="More projects">
+				{prev ? <a href={`/projects/${prev.id}/`}>← {prev.data.title}</a> : <span />}
+				{next ? <a href={`/projects/${next.id}/`}>{next.data.title} →</a> : <span />}
+			</nav>
+		</div>
+	</article>
+</Page>
+
+<style>
+	.pager {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		font-size: 0.92rem;
+	}
+	.pager a {
+		max-width: 48%;
+	}
+</style>

@@ -1,0 +1,94 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+	project: CollectionEntry<'projects'>;
+}
+const { project } = Astro.props;
+const d = project.data;
+---
+
+<a class="pcard" href={`/projects/${project.id}/`}>
+	{
+		d.cover ? (
+			<div class="thumb">
+				<img src={d.cover} alt={d.coverAlt ?? ''} loading="lazy" />
+			</div>
+		) : (
+			<div class="thumb empty" aria-hidden="true">
+				<span>{d.title.slice(0, 1)}</span>
+			</div>
+		)
+	}
+	<div class="body">
+		<p class="period">
+			{d.period} · {d.org}
+			{d.needsInput && <span class="badge-todo">draft</span>}
+		</p>
+		<h3>{d.title}</h3>
+		<p class="summary">{d.summary}</p>
+		<ul class="tags">
+			{d.skills.slice(0, 5).map((s) => <li>{s}</li>)}
+		</ul>
+	</div>
+</a>
+
+<style>
+	.pcard {
+		display: flex;
+		flex-direction: column;
+		border: 1px solid var(--line-soft);
+		border-radius: 14px;
+		background: var(--surface-2);
+		overflow: hidden;
+		text-decoration: none;
+		color: inherit;
+		transition: transform 120ms ease, box-shadow 120ms ease;
+	}
+	.pcard:hover {
+		transform: translateY(-2px);
+		box-shadow: var(--shadow);
+	}
+	.pcard:hover h3 {
+		text-decoration: underline;
+	}
+	.thumb {
+		aspect-ratio: 16 / 9;
+		background: #fff;
+		border-bottom: 1px solid var(--line-soft);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+	}
+	.thumb img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		padding: 6px;
+		border-radius: 0;
+	}
+	.thumb.empty {
+		background: linear-gradient(135deg, color-mix(in oklab, var(--teal) 30%, var(--surface)), var(--surface-2));
+	}
+	.thumb.empty span {
+		font-family: 'Fraunces', Georgia, serif;
+		font-size: 3rem;
+		color: var(--teal);
+	}
+	.body {
+		padding: 0.85rem 1rem 1rem;
+	}
+	.period {
+		margin: 0;
+		font-size: 0.8rem;
+		color: var(--text-muted);
+	}
+	h3 {
+		margin: 0.3rem 0 0.2rem;
+	}
+	.summary {
+		margin: 0.2rem 0 0;
+		font-size: 0.93rem;
+	}
+</style>

@@ -1,29 +1,34 @@
 ---
 import '../styles/global.css';
-import { SITE_TITLE } from '../consts';
+import { LINKS, OG_IMAGE, SITE_TITLE, AFFILIATION } from '../consts';
 
 interface Props {
 	title: string;
 	description: string;
+	image?: string;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const { title, description, image = OG_IMAGE } = Astro.props;
+const imageURL = new URL(image, Astro.site);
 
-const { title, description } = Astro.props;
+const person = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: SITE_TITLE,
+	jobTitle: AFFILIATION,
+	url: Astro.site?.toString(),
+	image: new URL(OG_IMAGE, Astro.site).toString(),
+	sameAs: [LINKS.github, LINKS.linkedin, LINKS.orcid, LINKS.inspire],
+};
 ---
 
-<!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" />
 <link rel="sitemap" href="/sitemap-index.xml" />
-<link
-	rel="alternate"
-	type="application/rss+xml"
-	title={SITE_TITLE}
-	href={new URL('rss.xml', Astro.site)}
-/>
+<link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={new URL('rss.xml', Astro.site)} />
 <meta name="generator" content={Astro.generator} />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -33,22 +38,21 @@ const { title, description } = Astro.props;
 	rel="stylesheet"
 />
 
-<!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
-
-<!-- Primary Meta Tags -->
 <title>{title}</title>
 <meta name="title" content={title} />
 <meta name="description" content={description} />
+<meta name="author" content={SITE_TITLE} />
 
-<!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
+<meta property="og:image" content={imageURL} />
 
-<!-- Twitter -->
-<meta property="twitter:card" content="summary" />
-<meta property="twitter:url" content={Astro.url} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageURL} />
+
+<script type="application/ld+json" set:html={JSON.stringify(person)} />

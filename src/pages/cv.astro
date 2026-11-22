@@ -1,0 +1,57 @@
+---
+import Page from '../layouts/Page.astro';
+import { LINKS, SITE_TITLE } from '../consts';
+import { skills, timeline } from '../data/timeline';
+import { ecalPapers } from '../data/publications';
+---
+
+<Page title={`CV | ${SITE_TITLE}`} description="Curriculum vitae of Maharnab Bhattacharjee.">
+	<section class="panel">
+		<h1>CV</h1>
+		<div class="pills">
+			<a href="/cv/Maharnab_Bhattacharjee_CV_industry.pdf">Download CV (industry, PDF)</a>
+			<a href="/cv/Maharnab_Bhattacharjee_CV_academic.pdf">Download CV (academic, PDF)</a>
+		</div>
+		<div class="todo">
+			Add the two PDFs to <code>public/cv/</code>. Use web versions without date of birth, phone number or
+			passport details.
+		</div>
+	</section>
+
+	<section class="panel">
+		<h2>Summary</h2>
+		<p>
+			Experimental physicist (PhD, 2025) with 12+ years across instrumentation, data pipelines and analysis.
+			Owned the calibration chain of a 38,400-channel calorimeter: raw-data decoding, statistical fitting at
+			scale, anomaly detection and certification. C++17, Python, ROOT, Geant4, SQL, CUDA, SLURM.
+		</p>
+		<p><a href={`mailto:${LINKS.email}`}>{LINKS.email}</a> · <a href={`mailto:${LINKS.emailWork}`}>{LINKS.emailWork}</a> · <a href={LINKS.linkedin}>LinkedIn</a> · <a href={LINKS.github}>GitHub</a></p>
+	</section>
+
+	<section class="panel">
+		<h2>Experience & education</h2>
+		<ul class="flat-list">
+			{timeline.map((t) => (
+				<li>
+					<span class="muted">{t.period}</span> · <strong>{t.title}</strong>, {t.org}
+				</li>
+			))}
+		</ul>
+	</section>
+
+	<section class="panel">
+		<h2>Skills</h2>
+		<ul class="flat-list">
+			{skills.map((s) => (
+				<li>
+					<strong>{s.group}:</strong> {s.items.join(', ')}
+				</li>
+			))}
+		</ul>
+	</section>
+
+	<section class="panel">
+		<h2>Publications</h2>
+		<p>{ecalPapers.length} detector papers (2 first-author) and DUNE collaboration papers. <a href="/publications">Full list →</a></p>
+	</section>
+</Page>

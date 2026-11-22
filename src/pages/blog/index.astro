@@ -15,7 +15,7 @@ const posts = (await getCollection('blog')).sort(
 <html lang="en">
 	<head>
 		<BaseHead
-			title={`Blog | ${SITE_TITLE}`}
+			title={`Writing | ${SITE_TITLE}`}
 			description="Research notes, engineering logs, and writing on detector systems and scientific computing."
 		/>
 		<style>
@@ -72,7 +72,7 @@ const posts = (await getCollection('blog')).sort(
 		<Header />
 		<main>
 			<section class="panel">
-				<h1>Blog</h1>
+				<h1>Writing</h1>
 				<p class="lede">Research notes, engineering logs, and technical writing from my work in detector development and scientific computing.</p>
 				<ul class="blog-list">
 					{

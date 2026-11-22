@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 380" font-family="Space Grotesk, Segoe UI, sans-serif" font-size="14">
+  <rect width="960" height="380" fill="#ffffff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b3641"/></marker>
+    <polygon id="hex" points="0,-26 22.5,-13 22.5,13 0,26 -22.5,13 -22.5,-13"/>
+  </defs>
+  <text x="480" y="32" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2730">TMT actuator test station (IIA Bangalore, 2013–14)</text>
+
+  <!-- segmented mirror motif -->
+  <g transform="translate(140,195)" fill="#e7f2f1" stroke="#0f5f59" stroke-width="1.5">
+    <use href="#hex" x="0" y="0"/><use href="#hex" x="45" y="0"/><use href="#hex" x="-45" y="0"/>
+    <use href="#hex" x="22.5" y="39"/><use href="#hex" x="-22.5" y="39"/><use href="#hex" x="22.5" y="-39"/><use href="#hex" x="-22.5" y="-39"/>
+    <use href="#hex" x="67.5" y="39"/><use href="#hex" x="-67.5" y="39"/><use href="#hex" x="67.5" y="-39"/><use href="#hex" x="-67.5" y="-39"/>
+    <use href="#hex" x="0" y="78"/><use href="#hex" x="0" y="-78"/>
+  </g>
+  <g transform="translate(140,195)" fill="#915407"><circle cx="0" cy="-12" r="4"/><circle cx="-10" cy="7" r="4"/><circle cx="10" cy="7" r="4"/></g>
+  <text x="140" y="320" text-anchor="middle" fill="#2b3641">492 mirror segments</text>
+  <text x="140" y="340" text-anchor="middle" fill="#5c6976" font-size="12">3 actuators each (orange)</text>
+
+  <!-- actuator under test -->
+  <rect x="290" y="110" width="180" height="170" rx="12" fill="#fff4e0" stroke="#915407"/>
+  <text x="380" y="140" text-anchor="middle" font-weight="700" fill="#915407">Actuator under test</text>
+  <text x="380" y="168" text-anchor="middle" fill="#2b3641">voice-coil motor</text>
+  <text x="380" y="192" text-anchor="middle" fill="#2b3641">off-loader motor</text>
+  <text x="380" y="216" text-anchor="middle" fill="#2b3641">position encoder</text>
+  <text x="380" y="252" text-anchor="middle" fill="#5c6976" font-size="12">built by Indian industry</text>
+
+  <!-- embedded server -->
+  <rect x="520" y="110" width="180" height="170" rx="12" fill="#e7f2f1" stroke="#0f5f59"/>
+  <text x="610" y="140" text-anchor="middle" font-weight="700" fill="#0f5f59">Embedded server</text>
+  <text x="610" y="168" text-anchor="middle" fill="#2b3641">ARM single-board PC</text>
+  <text x="610" y="192" text-anchor="middle" fill="#2b3641">C, pthreads, GPIO/ADC</text>
+  <text x="610" y="216" text-anchor="middle" fill="#2b3641">TCP command server</text>
+  <text x="610" y="252" text-anchor="middle" fill="#5c6976" font-size="12">drives motors, samples sensors</text>
+
+  <!-- GUI client -->
+  <rect x="750" y="110" width="190" height="170" rx="12" fill="#e7f2f1" stroke="#0f5f59"/>
+  <text x="845" y="140" text-anchor="middle" font-weight="700" fill="#0f5f59">Qt GUI client</text>
+  <text x="845" y="168" text-anchor="middle" fill="#2b3641">C++ / Qt</text>
+  <text x="845" y="192" text-anchor="middle" fill="#2b3641">test sequences</text>
+  <text x="845" y="216" text-anchor="middle" fill="#2b3641">live plots, logging</text>
+  <text x="845" y="252" text-anchor="middle" fill="#5c6976" font-size="12">pass/fail vs. spec</text>
+
+  <g stroke="#2b3641" stroke-width="2" fill="none" marker-end="url(#a)">
+    <path d="M520,175 H473"/>
+    <path d="M750,175 H703"/>
+    <path d="M703,215 H747"/>
+  </g>
+  <text x="725" y="165" text-anchor="middle" fill="#5c6976" font-size="11">commands</text>
+  <text x="725" y="232" text-anchor="middle" fill="#5c6976" font-size="11">data (LAN)</text>
+  <text x="480" y="360" text-anchor="middle" fill="#5c6976" font-size="12">Tested actuators were then shipped to the US for system-level testing</text>
+</svg>
