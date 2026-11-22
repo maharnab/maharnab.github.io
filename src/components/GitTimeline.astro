@@ -1,0 +1,246 @@
+---
+// Git-graph style timeline: one row per entry (newest first), one lane per concurrent activity.
+// Each entry is a coloured line from its start row up to the row where it ended.
+import { kindLabel, timeline, type Entry, type Kind } from '../data/timeline';
+
+const OPEN = '9999-12';
+const endOf = (e: Entry) => e.end ?? OPEN;
+
+// Rows: newest start first.
+const rows = [...timeline].sort(
+	(a, b) => b.start.localeCompare(a.start) || endOf(b).localeCompare(endOf(a)),
+);
+
+// Lanes: greedy interval colouring, oldest first; degrees get first pick so they form the main line.
+const laneOf = new Map<Entry, number>();
+const laneEnd: string[] = [];
+const kindRank: Record<Kind, number> = { education: 0, work: 1, project: 2 };
+[...timeline]
+	.sort((a, b) => a.start.localeCompare(b.start) || kindRank[a.kind] - kindRank[b.kind])
+	.forEach((e) => {
+		let lane = laneEnd.findIndex((end) => end < e.start);
+		if (lane === -1) lane = laneEnd.length;
+		laneEnd[lane] = endOf(e);
+		laneOf.set(e, lane);
+	});
+const nLanes = laneEnd.length;
+
+// For each entry: its start row and the newest row it still covers.
+const span = rows.map((e, startRow) => {
+	const open = !e.end;
+	let endRow = startRow;
+	if (open) endRow = 0;
+	else {
+		for (let j = 0; j <= startRow; j++) {
+			if (rows[j].start <= endOf(e)) {
+				endRow = j;
+				break;
+			}
+		}
+	}
+	return { e, lane: laneOf.get(e)!, startRow, endRow, open };
+});
+
+type Seg = { lane: number; kind: Kind; part: 'up' | 'full' | 'down'; cap: boolean };
+const segsForRow = (j: number): Seg[] =>
+	span
+		.filter((s) => s.endRow <= j && j <= s.startRow && !(s.startRow === s.endRow && !s.open))
+		.map((s) => {
+			let part: Seg['part'] = 'full';
+			let cap = false;
+			if (j === s.startRow) part = 'up';
+			else if (j === s.endRow && !s.open) {
+				part = 'down';
+				cap = true;
+			}
+			return { lane: s.lane, kind: s.e.kind, part, cap };
+		});
+
+const LANE_W = 22;
+const graphWidth = nLanes * LANE_W;
+---
+
+<ol class="gitgraph" style={`--graph-w:${graphWidth}px; --lane-w:${LANE_W}px`}>
+	{
+		rows.map((e, j) => (
+			<li>
+				<div class="when">{e.period}</div>
+				<div class="graph" aria-hidden="true">
+					{segsForRow(j).map((s) => (
+						<>
+							<span class={`seg ${s.part} k-${s.kind}`} style={`--lane:${s.lane}`} />
+							{s.cap && <span class={`cap k-${s.kind}`} style={`--lane:${s.lane}`} />}
+						</>
+					))}
+					<span class={`dot k-${e.kind}`} style={`--lane:${laneOf.get(e)}`} />
+				</div>
+				<div class="what">
+					<span class="title">{e.title}</span>
+					<span class="org">{e.org}</span>
+					<p>
+						{e.short}
+						{e.project && (
+							<>
+								{' '}
+								<a href={`/projects/${e.project}/`}>Details</a>
+							</>
+						)}
+					</p>
+				</div>
+			</li>
+		))
+	}
+</ol>
+<p class="legend">
+	{(['work', 'education', 'project'] as Kind[]).map((k) => <span class={`k k-${k}`}>{kindLabel[k]}</span>)}
+	<slot />
+</p>
+
+<style>
+	.gitgraph {
+		list-style: none;
+		margin: 0.4rem 0 0;
+		padding: 0;
+		--dot-y: 1.05rem;
+	}
+	.gitgraph li {
+		display: grid;
+		grid-template-columns: 118px var(--graph-w) minmax(0, 1fr);
+		column-gap: 0.9rem;
+	}
+	.when,
+	.what {
+		padding: 0.5rem 0;
+	}
+	.when {
+		font-size: 0.86rem;
+		color: var(--text-muted);
+		padding-top: 0.62rem;
+		white-space: nowrap;
+		text-align: right;
+	}
+	.graph {
+		position: relative;
+	}
+	.seg {
+		position: absolute;
+		left: calc(var(--lane) * var(--lane-w) + var(--lane-w) / 2 - 1.5px);
+		width: 3px;
+		border-radius: 2px;
+	}
+	.seg.full {
+		top: 0;
+		bottom: 0;
+	}
+	.seg.up {
+		top: 0;
+		height: var(--dot-y);
+	}
+	.seg.down {
+		top: var(--dot-y);
+		bottom: 0;
+	}
+	.dot,
+	.cap {
+		position: absolute;
+		left: calc(var(--lane) * var(--lane-w) + var(--lane-w) / 2 - 7px);
+		top: calc(var(--dot-y) - 7px);
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		border: 3px solid var(--surface);
+		box-shadow: 0 0 0 1px var(--line-strong);
+		z-index: 1;
+	}
+	.cap {
+		left: calc(var(--lane) * var(--lane-w) + var(--lane-w) / 2 - 4px);
+		top: calc(var(--dot-y) - 4px);
+		width: 8px;
+		height: 8px;
+		border: 2px solid currentColor;
+		background: var(--surface) !important;
+		box-shadow: none;
+	}
+	.k-work {
+		background: var(--teal);
+		color: var(--teal);
+	}
+	.k-education {
+		background: var(--accent);
+		color: var(--accent);
+	}
+	.k-project {
+		background: var(--text-muted);
+		color: var(--text-muted);
+	}
+	.title {
+		font-weight: 600;
+		color: var(--text-strong);
+		margin-right: 0.5rem;
+	}
+	.org {
+		font-size: 0.9rem;
+		color: var(--teal);
+	}
+	.what p {
+		margin: 0.15rem 0 0;
+		font-size: 0.95rem;
+	}
+	.what p a {
+		font-size: 0.85rem;
+		white-space: nowrap;
+	}
+	.legend {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 1.1rem;
+		margin-top: 0.8rem;
+		font-size: 0.85rem;
+		color: var(--text-muted);
+	}
+	.legend .k {
+		background: none;
+		color: var(--text-muted);
+	}
+	.legend .k::before {
+		content: '';
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		margin-right: 0.35rem;
+		vertical-align: -1px;
+	}
+	.legend .k-work::before {
+		background: var(--teal);
+	}
+	.legend .k-education::before {
+		background: var(--accent);
+	}
+	.legend .k-project::before {
+		background: var(--text-muted);
+	}
+	.legend :global(a) {
+		margin-left: auto;
+	}
+	@media (max-width: 640px) {
+		.gitgraph li {
+			grid-template-columns: var(--graph-w) minmax(0, 1fr);
+		}
+		.when {
+			grid-column: 2;
+			grid-row: 1;
+			text-align: left;
+			padding-bottom: 0;
+		}
+		.graph {
+			grid-column: 1;
+			grid-row: 1 / span 2;
+		}
+		.what {
+			grid-column: 2;
+			padding-top: 0;
+		}
+	}
+</style>
