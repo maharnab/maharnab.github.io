@@ -30,7 +30,7 @@ export const timeline: Entry[] = [
 		title: 'Research Scientist',
 		earlier: 'Junior Research Scientist 2019 – 2026; promoted May 2026',
 		org: 'LHEP, JINR · NICA-MPD electromagnetic calorimeter',
-		short: 'Calibration and QA of the MPD calorimeter, from readout boards to the installed detector; now analysing its cosmic and beam data.',
+		short: 'Calibration, QA and data analysis for the MPD electromagnetic calorimeter.',
 		text: 'Junior Research Scientist 2019–2026, Research Scientist since May 2026. Construction-stage calibration and QA of the calorimeter: LED calibration of 2,400 SiPM readout boards, cosmic-muon tests of the modules before assembly, and cosmic-ray testing of all 50 half-sectors before installation. Now analysing cosmic and beam (collision) data recorded with the calorimeter inside MPD. Built the C++/Python pipelines for calibration, equalisation, waveform quality control and live-monitoring prototypes.',
 		project: 'mpd-ecal-data-analysis',
 		kind: 'work',
