@@ -3,8 +3,9 @@ import { getCollection } from 'astro:content';
 import Page from '../../layouts/Page.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import { SITE_TITLE } from '../../consts';
+import { newestFirst } from '../../utils/projects';
 
-const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const projects = (await getCollection('projects')).sort(newestFirst);
 ---
 
 <Page

@@ -2,6 +2,7 @@
 import { type CollectionEntry, getCollection, render } from 'astro:content';
 import Page from '../../layouts/Page.astro';
 import { SITE_TITLE } from '../../consts';
+import { newestFirst } from '../../utils/projects';
 
 export async function getStaticPaths() {
 	const projects = await getCollection('projects');
@@ -13,7 +14,7 @@ const project = Astro.props;
 const d = project.data;
 const { Content } = await render(project);
 
-const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const all = (await getCollection('projects')).sort(newestFirst);
 const i = all.findIndex((p) => p.id === project.id);
 const prev = all[i - 1];
 const next = all[i + 1];

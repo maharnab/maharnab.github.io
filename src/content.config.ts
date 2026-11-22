@@ -23,7 +23,7 @@ const projects = defineCollection({
 			period: z.coerce.string(),
 			org: z.string(),
 			role: z.string().optional(),
-			order: z.number(), // lower = earlier in lists
+			order: z.number(), // tie-break when two projects have the same years (lower first)
 			featured: z.boolean().default(false),
 			cover: z.string().optional(), // path under /public
 			coverAlt: z.string().optional(),
