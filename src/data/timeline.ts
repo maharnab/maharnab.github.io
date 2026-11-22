@@ -1,7 +1,7 @@
 // Experience & education timeline. Source: CV v5 (Jul 2026).
 // start/end are 'YYYY-MM'; omit end for ongoing. Order here doesn't matter: views sort by date.
 
-export type Kind = 'work' | 'education' | 'project';
+export type Kind = 'work' | 'education' | 'project' | 'milestone';
 
 export type Entry = {
 	start: string;
@@ -13,14 +13,18 @@ export type Entry = {
 	text: string; // fuller text, used on About
 	project?: string; // slug in src/content/projects
 	kind: Kind;
-	branch?: boolean;
-	earlier?: string; // earlier title in the same position, shown under the title // force onto a side branch of the home-page timeline
+	earlier?: string; // earlier title in the same position, shown under the title
+	// Home-page timeline: entries with the same lane share a line that runs parallel to the main
+	// (studies) line. Without a lane, an entry sits on the main line or, if it falls inside a
+	// degree, branches off it as a short side item.
+	lane?: 'jinr' | 'advisor';
 };
 
 export const kindLabel: Record<Kind, string> = {
 	work: 'position',
 	education: 'degree',
 	project: 'internship / thesis project',
+	milestone: 'milestone',
 };
 
 export const timeline: Entry[] = [
@@ -34,6 +38,16 @@ export const timeline: Entry[] = [
 		text: 'Full-time NICA-MPD work since submitting the PhD thesis (Oct 2024); Research Scientist since May 2026. Cosmic-ray testing of the half-sectors before installation, then analysis of cosmic and beam (collision) data recorded with the calorimeter inside MPD. C++/Python pipelines for calibration, equalisation, waveform quality control and live-monitoring prototypes.',
 		project: 'mpd-ecal-data-analysis',
 		kind: 'work',
+		lane: 'jinr',
+	},
+	{
+		start: '2024-10',
+		period: 'Oct 2024',
+		title: 'PhD thesis submitted',
+		org: 'Gauhati University',
+		short: 'Degree awarded Oct 2025.',
+		text: '',
+		kind: 'milestone',
 	},
 	{
 		start: '2019-05',
@@ -45,16 +59,17 @@ export const timeline: Entry[] = [
 		text: 'PhD research carried out at JINR as a Junior Research Scientist, with the work serving both the thesis and the NICA-MPD calorimeter: LED calibration of 2,400 SiPM readout boards, cosmic-muon QA of the modules before they were assembled into half-sectors, cosmic tests of the half-sectors, and electron-beam data analysis.',
 		project: 'module-tests-and-beam',
 		kind: 'work',
+		lane: 'jinr',
 	},
 	{
 		start: '2022-01',
 		period: '2022 – present',
-		branch: true, // ongoing, but a side role next to the JINR position
 		title: 'Technical & Scientific Advisor',
 		org: 'DSRL (startup), Technology Incubation Centre, IIT Guwahati',
 		short: 'Instrumentation advice on SiPM bias electronics and gamma-ray detection.',
 		text: 'Instrumentation advice for start-up projects: SiPM bias electronics, gamma-ray detection concepts.',
 		kind: 'work',
+		lane: 'advisor',
 	},
 	{
 		start: '2018-11',
@@ -166,7 +181,7 @@ export const timeline: Entry[] = [
 ];
 
 // Newest first, for lists.
-export const timelineNewestFirst = [...timeline].sort(
+export const timelineNewestFirst = timeline.filter((e) => e.kind !== 'milestone').sort(
 	(a, b) => b.start.localeCompare(a.start) || (b.end ?? '9999').localeCompare(a.end ?? '9999'),
 );
 
