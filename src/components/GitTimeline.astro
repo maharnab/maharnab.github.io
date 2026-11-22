@@ -93,18 +93,17 @@ const nLanes = Math.max(...all.map((g) => g.lane));
 const LANE_W = 22;
 const xOf = (lane: number) => LANE_W / 2 + LANE_W * lane;
 const W = LANE_W * (nLanes + 1);
-// A branch is a curve followed by a short straight run into the dot. Level-2 branches (small
-// dots) use a shorter one. Rows that start a branch are tall enough to hold it, so a branch
-// always leaves its parent line inside its own row, never at the parent's circle below.
-const BR = { 1: { s: 15, c: 22 }, 2: { s: 15, c: 18 } } as const;
-const H = (lv: 1 | 2) => BR[lv].s + BR[lv].c;
-const C = H(1);
-const curve = (x0: number, x1: number, lv: 1 | 2) => {
-	const { s, c } = BR[lv];
-	const h = s + c;
-	// Level-2 lanes are narrow, so their curve uses softer control points to read as a smooth S.
-	const [a, b] = lv === 2 ? [0.5, 0.5] : [0.4, 0.6];
-	return `M ${x0} ${h} C ${x0} ${s + c * a}, ${x1} ${s + c * b}, ${x1} ${s} L ${x1} 0`;
+// A branch is a curve followed by a short straight run into the dot. The curve rises one lane
+// width for each lane it crosses, so every branch leaves its parent at the same angle however
+// far it travels. Rows that start a branch are tall enough to hold it, so a branch always leaves
+// its parent line inside its own row, never at the parent's circle below.
+const S = 15;
+const rise = (g: Group) => (g.lane - (g.parent ? g.parent.lane : 0)) * LANE_W;
+const hOf = (g: Group) => S + rise(g);
+const C = S + LANE_W;
+const curve = (x0: number, x1: number, c: number) => {
+	const h = S + c;
+	return `M ${x0} ${h} C ${x0} ${S + c * 0.4}, ${x1} ${S + c * 0.6}, ${x1} ${S} L ${x1} 0`;
 };
 const last = rows.length - 1;
 
@@ -139,15 +138,15 @@ const href = (e: Entry) => (e.project ? `/projects/${e.project}/` : undefined);
 			const s = e.kind === 'milestone' ? 'mile' : g.level === 2 ? 'sub' : 'main';
 			const from = g.parent ? xOf(g.parent.lane) : xOf(0);
 			return (
-				<li class={`row ${s}`} style={first ? `min-height: calc(var(--dot-y) + ${H(g.level) + (g.level === 2 ? 4 : 7)}px)` : undefined}>
+				<li class={`row ${s}`} style={first ? `min-height: calc(var(--dot-y) + ${hOf(g) + (g.level === 2 ? 4 : 7)}px)` : undefined}>
 					<div class="when">{when(e)}</div>
 					<div class="graph" aria-hidden="true">
 						{segments(i).map((sg) => (
 							<span class={`line ${sg.part} ${sg.cls}`} style={`left:${sg.x - 1}px`} />
 						))}
 						{first && (
-							<svg class={`curve g-${g.key} lv${g.level}`} width={W} height={H(g.level)} viewBox={`0 0 ${W} ${H(g.level)}`}>
-								<path d={curve(from, xOf(g.lane), g.level)} />
+							<svg class={`curve g-${g.key} lv${g.level}`} width={W} height={hOf(g)} viewBox={`0 0 ${W} ${hOf(g)}`}>
+								<path d={curve(from, xOf(g.lane), rise(g))} />
 							</svg>
 						)}
 						<span class="leader" style={`left:${xOf(g.lane) + 6}px`} />
