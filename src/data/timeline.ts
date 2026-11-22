@@ -13,7 +13,8 @@ export type Entry = {
 	text: string; // fuller text, used on About
 	project?: string; // slug in src/content/projects
 	kind: Kind;
-	branch?: boolean; // force onto a side branch of the home-page timeline
+	branch?: boolean;
+	earlier?: string; // earlier title in the same position, shown under the title // force onto a side branch of the home-page timeline
 };
 
 export const kindLabel: Record<Kind, string> = {
@@ -27,6 +28,7 @@ export const timeline: Entry[] = [
 		start: '2019-05',
 		period: '2019 – present',
 		title: 'Research Scientist',
+		earlier: 'Junior Research Scientist 2019 – 2026; promoted May 2026',
 		org: 'LHEP, JINR · NICA-MPD electromagnetic calorimeter',
 		short: 'Calibration and QA of the MPD calorimeter, from readout boards to the installed detector; now analysing its cosmic and beam data.',
 		text: 'Junior Research Scientist 2019–2026, Research Scientist since May 2026. Construction-stage calibration and QA of the calorimeter: LED calibration of 2,400 SiPM readout boards, cosmic-muon tests of the modules before assembly, and cosmic-ray testing of all 50 half-sectors before installation. Now analysing cosmic and beam (collision) data recorded with the calorimeter inside MPD. Built the C++/Python pipelines for calibration, equalisation, waveform quality control and live-monitoring prototypes.',
@@ -60,7 +62,7 @@ export const timeline: Entry[] = [
 		period: 'Sep 2016 – Oct 2025',
 		title: 'PhD, Physical Science (Experimental HEP)',
 		org: 'Gauhati University · research at IIT Guwahati and JINR',
-		short: 'Electromagnetic shower simulation and reconstruction; SiPM readout electronics.',
+		short: 'Electromagnetic shower simulation and reconstruction; SiPM readout electronics. Completed alongside the JINR position from 2019.',
 		text: 'Thesis: "Simulation and Reconstruction of Electromagnetic Shower and Design and Development of Readout Electronics for SiPM". Submitted Nov 2024, awarded Oct 2025. Supervisors: Prof. E. Saikia, Prof. B. Bhuyan.',
 		project: 'dune-nd-ecal-simulation',
 		kind: 'education',

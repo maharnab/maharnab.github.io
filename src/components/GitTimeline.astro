@@ -51,6 +51,7 @@ const last = groups.length - 1;
 					<div class="what">
 						<span class="title">{href(m) ? <a href={href(m)}>{m.title}</a> : m.title}</span>
 						<span class="org">{m.org.split(' · ')[0]}</span>
+						{m.earlier && <span class="earlier">{m.earlier}</span>}
 						{m.short && <p>{m.short}</p>}
 					</div>
 				</div>
@@ -155,6 +156,11 @@ const last = groups.length - 1;
 	}
 	.org {
 		font-size: 0.9rem;
+		color: var(--text-muted);
+	}
+	.earlier {
+		display: block;
+		font-size: 0.85rem;
 		color: var(--text-muted);
 	}
 	.main p {
