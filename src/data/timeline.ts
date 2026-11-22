@@ -13,6 +13,7 @@ export type Entry = {
 	text: string; // fuller text, used on About
 	project?: string; // slug in src/content/projects
 	kind: Kind;
+	branch?: boolean; // force onto a side branch of the home-page timeline
 };
 
 export const kindLabel: Record<Kind, string> = {
@@ -34,8 +35,8 @@ export const timeline: Entry[] = [
 	},
 	{
 		start: '2022-01',
-		end: '2024-12',
-		period: '2022 – 2024',
+		period: '2022 – present',
+		branch: true, // ongoing, but a side role next to the JINR position
 		title: 'Technical & Scientific Advisor',
 		org: 'DSRL (startup), Technology Incubation Centre, IIT Guwahati',
 		short: 'Instrumentation advice on SiPM bias electronics and gamma-ray detection.',

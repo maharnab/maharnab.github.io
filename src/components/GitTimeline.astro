@@ -15,11 +15,12 @@ const rows = [...timeline].sort(
 const months = (ym: string) => Number(ym.slice(0, 4)) * 12 + Number(ym.slice(5, 7));
 const degrees = timeline.filter((e) => e.kind === 'education');
 const isBranch = (e: Entry) =>
-	e.kind !== 'education' &&
+	e.branch ||
+	(e.kind !== 'education' &&
 	!!e.end &&
 	degrees.some(
 		(d) => d.start <= e.start && e.start <= endOf(d) && months(e.end!) <= months(endOf(d)) + 2,
-	);
+		));
 
 const LANE_W = 26;
 const DOT_Y = 20; // dot centre from the top of a row
